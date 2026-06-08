@@ -10,10 +10,7 @@ export default function RoomsPage() {
   const [search, setSearch] = useState('')
   const [building, setBuilding] = useState('')
 
-  const buildings = useMemo(
-    () => [...new Set((rooms || []).map((r) => r.building))].sort(),
-    [rooms],
-  )
+  const buildings = useMemo(() => [...new Set((rooms || []).map((r) => r.building))].sort(), [rooms])
 
   const filtered = useMemo(() => {
     return (rooms || []).filter((room) => {
@@ -27,13 +24,17 @@ export default function RoomsPage() {
 
   return (
     <div>
-      <PageHeader title="Salles" description="Parcourez les salles disponibles et réservez en un clic." />
+      <PageHeader
+        eyebrow="rooms · index"
+        title="Salles"
+        description="Parcourez les salles disponibles et réservez en un clic."
+      />
 
       {error ? (
         <EmptyState title="Impossible de charger les salles" description={error} />
       ) : (
         <>
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+          <div className="reveal mb-6 flex flex-col gap-3 sm:flex-row">
             <Input
               placeholder="Rechercher une salle…"
               value={search}
@@ -48,14 +49,17 @@ export default function RoomsPage() {
                 </option>
               ))}
             </Select>
+            <span className="ml-auto hidden items-center font-mono text-xs text-fog-600 sm:flex">
+              {filtered.length} / {rooms?.length ?? 0} salles
+            </span>
           </div>
 
           {filtered.length === 0 ? (
             <EmptyState title="Aucune salle trouvée" description="Essayez d'ajuster vos filtres." />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {filtered.map((room) => (
-                <RoomCard key={room.id} room={room} />
+              {filtered.map((room, i) => (
+                <RoomCard key={room.id} room={room} delay={Math.min(i * 0.04, 0.4)} />
               ))}
             </div>
           )}

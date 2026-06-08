@@ -42,7 +42,12 @@ export default function RoomForm({ equipment = [], initialValues = {}, submitLab
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      {error && <div className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>}
+      {error && (
+        <div className="flex items-start gap-2 rounded-lg border border-alert-500/30 bg-alert-500/10 px-4 py-3 text-sm text-alert-400">
+          <span className="font-mono">!</span>
+          {error}
+        </div>
+      )}
 
       <Field label="Nom" htmlFor="name">
         <Input id="name" name="name" required value={form.name} onChange={handleChange} />
@@ -74,8 +79,10 @@ export default function RoomForm({ equipment = [], initialValues = {}, submitLab
                   type="button"
                   key={eq.id}
                   onClick={() => toggleEquipment(eq.id)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    active ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium uppercase tracking-wider transition ${
+                    active
+                      ? 'bg-signal-400 text-ink-950'
+                      : 'bg-ink-800 text-fog-400 ring-1 ring-inset ring-ink-600 hover:bg-ink-750 hover:text-fog-200'
                   }`}
                 >
                   {eq.name}

@@ -53,9 +53,13 @@ export default function AdminReservationsPage() {
 
   return (
     <div>
-      <PageHeader title="Toutes les réservations" description="Filtrez par utilisateur, salle, date ou statut." />
+      <PageHeader
+        eyebrow="admin · reservations/all"
+        title="Toutes les réservations"
+        description="Filtrez par utilisateur, salle, date ou statut."
+      />
 
-      <Card className="mb-5 p-4">
+      <Card className="reveal mb-5 p-4">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <Select name="user_id" value={filters.user_id} onChange={updateFilter}>
             <option value="">Tous les utilisateurs</option>
@@ -88,38 +92,40 @@ export default function AdminReservationsPage() {
       {loading ? (
         <PageLoader />
       ) : error ? (
-        <Card className="p-6 text-sm text-rose-600">{error}</Card>
+        <Card className="p-6 text-sm text-alert-400">{error}</Card>
       ) : (
-        <Card className="overflow-hidden">
+        <Card className="reveal overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-5 py-3">Salle</th>
-                  <th className="px-5 py-3">Utilisateur</th>
-                  <th className="px-5 py-3">Date</th>
-                  <th className="px-5 py-3">Horaire</th>
-                  <th className="px-5 py-3">Pers.</th>
-                  <th className="px-5 py-3">Motif</th>
-                  <th className="px-5 py-3">Statut</th>
+            <table className="min-w-full divide-y divide-ink-700 text-sm">
+              <thead className="bg-ink-900/50">
+                <tr className="label-mono text-left">
+                  <th className="px-5 py-3 font-normal">salle</th>
+                  <th className="px-5 py-3 font-normal">utilisateur</th>
+                  <th className="px-5 py-3 font-normal">date</th>
+                  <th className="px-5 py-3 font-normal">horaire</th>
+                  <th className="px-5 py-3 font-normal">pers.</th>
+                  <th className="px-5 py-3 font-normal">motif</th>
+                  <th className="px-5 py-3 font-normal">statut</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-ink-700">
                 {reservations.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-10 text-center text-slate-400">
-                      Aucune réservation pour ces critères.
+                    <td colSpan={7} className="px-5 py-12 text-center font-mono text-sm text-fog-600">
+                      // aucune réservation pour ces critères
                     </td>
                   </tr>
                 ) : (
                   reservations.map((res) => (
-                    <tr key={res.id} className="hover:bg-slate-50">
-                      <td className="px-5 py-3 font-medium text-slate-800">{res.room?.name}</td>
-                      <td className="px-5 py-3 text-slate-600">{res.user?.full_name}</td>
-                      <td className="px-5 py-3 text-slate-600">{formatDate(res.date)}</td>
-                      <td className="px-5 py-3 text-slate-600">{formatTimeRange(res.start_time, res.end_time)}</td>
-                      <td className="px-5 py-3 text-slate-600">{res.participants}</td>
-                      <td className="px-5 py-3 max-w-[200px] truncate text-slate-600" title={res.purpose}>
+                    <tr key={res.id} className="transition hover:bg-ink-800/40">
+                      <td className="px-5 py-3 font-medium text-fog-50">{res.room?.name}</td>
+                      <td className="px-5 py-3 text-fog-400">{res.user?.full_name}</td>
+                      <td className="px-5 py-3 font-mono text-xs text-fog-400">{formatDate(res.date)}</td>
+                      <td className="px-5 py-3 font-mono text-xs text-fog-400 tabular-nums">
+                        {formatTimeRange(res.start_time, res.end_time)}
+                      </td>
+                      <td className="px-5 py-3 font-mono text-fog-400 tabular-nums">{res.participants}</td>
+                      <td className="max-w-[200px] truncate px-5 py-3 text-fog-400" title={res.purpose}>
                         {res.purpose}
                       </td>
                       <td className="px-5 py-3">
@@ -133,16 +139,16 @@ export default function AdminReservationsPage() {
           </div>
 
           {meta && meta.last_page > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
+            <div className="flex items-center justify-between border-t border-ink-700 px-5 py-3 font-mono text-xs text-fog-500">
               <span>
-                Page {meta.current_page} / {meta.last_page} · {meta.total} réservations
+                page {meta.current_page}/{meta.last_page} · {meta.total} résultats
               </span>
               <div className="flex gap-2">
                 <Button variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-                  Précédent
+                  ← Préc.
                 </Button>
                 <Button variant="secondary" disabled={page >= meta.last_page} onClick={() => setPage((p) => p + 1)}>
-                  Suivant
+                  Suiv. →
                 </Button>
               </div>
             </div>

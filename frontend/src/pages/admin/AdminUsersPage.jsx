@@ -62,44 +62,45 @@ export default function AdminUsersPage() {
   return (
     <div>
       <PageHeader
+        eyebrow="admin · users/manage"
         title="Gestion des utilisateurs"
         description="Créez, modifiez les rôles et supprimez les comptes."
-        action={<Button onClick={openCreate}>Nouvel utilisateur</Button>}
+        action={<Button onClick={openCreate}>+ Nouvel utilisateur</Button>}
       />
 
-      <Card className="overflow-hidden">
+      <Card className="reveal overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <tr>
-                <th className="px-5 py-3">Nom</th>
-                <th className="px-5 py-3">E-mail</th>
-                <th className="px-5 py-3">Rôle</th>
-                <th className="px-5 py-3">Réservations</th>
-                <th className="px-5 py-3 text-right">Actions</th>
+          <table className="min-w-full divide-y divide-ink-700 text-sm">
+            <thead className="bg-ink-900/50">
+              <tr className="label-mono text-left">
+                <th className="px-5 py-3 font-normal">nom</th>
+                <th className="px-5 py-3 font-normal">email</th>
+                <th className="px-5 py-3 font-normal">rôle</th>
+                <th className="px-5 py-3 font-normal">résa</th>
+                <th className="px-5 py-3 text-right font-normal">actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-ink-700">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-slate-50">
-                  <td className="px-5 py-3 font-medium text-slate-800">
+                <tr key={u.id} className="transition hover:bg-ink-800/40">
+                  <td className="px-5 py-3 font-medium text-fog-50">
                     {u.full_name}
-                    {u.id === currentUser?.id && <span className="ml-2 text-xs text-slate-400">(vous)</span>}
+                    {u.id === currentUser?.id && <span className="ml-2 font-mono text-[0.625rem] text-fog-600">(vous)</span>}
                   </td>
-                  <td className="px-5 py-3 text-slate-600">{u.email}</td>
+                  <td className="px-5 py-3 font-mono text-xs text-fog-400">{u.email}</td>
                   <td className="px-5 py-3">
-                    <Badge variant={u.role === 'ADMIN' ? 'indigo' : 'gray'}>
-                      {u.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur'}
+                    <Badge variant={u.role === 'ADMIN' ? 'signal' : 'neutral'}>
+                      {u.role === 'ADMIN' ? 'admin' : 'user'}
                     </Badge>
                   </td>
-                  <td className="px-5 py-3 text-slate-600">{u.reservations_count ?? 0}</td>
+                  <td className="px-5 py-3 font-mono text-fog-400 tabular-nums">{u.reservations_count ?? 0}</td>
                   <td className="px-5 py-3">
                     <div className="flex justify-end gap-2">
                       <Button variant="secondary" onClick={() => openEdit(u)}>
                         Modifier
                       </Button>
                       <Button variant="danger" disabled={u.id === currentUser?.id} onClick={() => setDeleting(u)}>
-                        Supprimer
+                        Suppr.
                       </Button>
                     </div>
                   </td>
@@ -111,12 +112,7 @@ export default function AdminUsersPage() {
       </Card>
 
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? "Modifier l'utilisateur" : 'Nouvel utilisateur'}>
-        <UserForm
-          initialValues={editing || {}}
-          isEdit={!!editing}
-          onSubmit={handleSubmit}
-          onCancel={() => setFormOpen(false)}
-        />
+        <UserForm initialValues={editing || {}} isEdit={!!editing} onSubmit={handleSubmit} onCancel={() => setFormOpen(false)} />
       </Modal>
 
       <ConfirmDialog

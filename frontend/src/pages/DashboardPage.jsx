@@ -29,31 +29,32 @@ export default function DashboardPage() {
   return (
     <div>
       <PageHeader
-        title={`Bonjour, ${user?.firstname} 👋`}
-        description="Voici un aperçu de votre activité de réservation."
+        eyebrow={`session · ${user?.email}`}
+        title={`Bonjour, ${user?.firstname}`}
+        description="Aperçu de votre activité de réservation."
         action={
           isAdmin && (
             <Link to="/admin">
-              <Button variant="secondary">Dashboard admin</Button>
+              <Button variant="secondary">Console admin →</Button>
             </Link>
           )
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Réservations actives" value={stats.active} accent="emerald" />
-        <StatCard label="À venir" value={stats.upcoming.length} accent="brand" />
-        <StatCard label="Annulées" value={stats.cancelled} accent="rose" />
-        <StatCard label="Salles disponibles" value={rooms?.length ?? '—'} accent="slate" />
+        <StatCard label="réservations actives" code="active" value={stats.active} accent="ok" delay={0.05} />
+        <StatCard label="à venir" code="upcoming" value={stats.upcoming.length} accent="signal" delay={0.1} />
+        <StatCard label="annulées" code="cancelled" value={stats.cancelled} accent="alert" delay={0.15} />
+        <StatCard label="salles dispo" code="rooms" value={rooms?.length ?? '—'} accent="fog" delay={0.2} />
       </div>
 
       <div className="mt-8 grid gap-5 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="reveal lg:col-span-2" >
           <CardHeader
             title="Prochaines réservations"
             action={
-              <Link to="/reservations" className="text-sm font-medium text-brand-600 hover:text-brand-700">
-                Tout voir
+              <Link to="/reservations" className="font-mono text-xs text-signal-400 transition hover:text-signal-300">
+                tout voir →
               </Link>
             }
           />
@@ -69,12 +70,12 @@ export default function DashboardPage() {
                 }
               />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-ink-700">
                 {stats.upcoming.slice(0, 5).map((res) => (
-                  <li key={res.id} className="flex items-center justify-between py-3">
-                    <div>
-                      <p className="font-medium text-slate-800">{res.room?.name || `Salle #${res.room_id}`}</p>
-                      <p className="text-sm text-slate-500">
+                  <li key={res.id} className="flex items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-fog-100">{res.room?.name || `Salle #${res.room_id}`}</p>
+                      <p className="font-mono text-xs text-fog-500">
                         {formatDate(res.date)} · {formatTimeRange(res.start_time, res.end_time)}
                       </p>
                     </div>
@@ -86,7 +87,7 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        <Card>
+        <Card className="reveal">
           <CardHeader title="Actions rapides" />
           <div className="flex flex-col gap-2 p-5">
             <Link to="/reservations/new">

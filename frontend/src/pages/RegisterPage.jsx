@@ -29,7 +29,7 @@ export default function RegisterPage() {
     setError(null)
     try {
       await register(form)
-      toast.success('Compte créé avec succès !')
+      toast.success('Compte créé · session ouverte')
       navigate('/', { replace: true })
     } catch (err) {
       setError(extractError(err, 'Inscription impossible.'))
@@ -39,38 +39,44 @@ export default function RegisterPage() {
   }
 
   return (
-    <div>
-      <h2 className="mb-1 text-xl font-bold text-slate-900">Créer un compte</h2>
-      <p className="mb-6 text-sm text-slate-500">Rejoignez la plateforme de réservation.</p>
+    <div className="reveal">
+      <p className="label-mono mb-2">auth · register</p>
+      <h2 className="font-display text-3xl font-bold tracking-tight text-fog-50">Créer un compte</h2>
+      <p className="mt-2 text-sm text-fog-500">Rejoignez la plateforme de réservation.</p>
 
-      {error && <div className="mb-4 rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>}
+      {error && (
+        <div className="mt-6 flex items-start gap-2 rounded-lg border border-alert-500/30 bg-alert-500/10 px-4 py-3 text-sm text-alert-400">
+          <span className="font-mono">!</span>
+          {error}
+        </div>
+      )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Prénom" htmlFor="firstname">
+          <Field label="prénom" htmlFor="firstname">
             <Input id="firstname" name="firstname" required value={form.firstname} onChange={handleChange} />
           </Field>
-          <Field label="Nom" htmlFor="lastname">
+          <Field label="nom" htmlFor="lastname">
             <Input id="lastname" name="lastname" required value={form.lastname} onChange={handleChange} />
           </Field>
         </div>
-        <Field label="Adresse e-mail" htmlFor="email">
+        <Field label="email" htmlFor="email">
           <Input id="email" name="email" type="email" autoComplete="email" required value={form.email} onChange={handleChange} />
         </Field>
-        <Field label="Mot de passe" htmlFor="password">
+        <Field label="mot de passe" htmlFor="password">
           <Input id="password" name="password" type="password" autoComplete="new-password" required value={form.password} onChange={handleChange} />
         </Field>
-        <Field label="Confirmer le mot de passe" htmlFor="password_confirmation">
+        <Field label="confirmation" htmlFor="password_confirmation">
           <Input id="password_confirmation" name="password_confirmation" type="password" autoComplete="new-password" required value={form.password_confirmation} onChange={handleChange} />
         </Field>
         <Button type="submit" loading={loading} className="mt-2 w-full">
-          S'inscrire
+          S'inscrire →
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-fog-500">
         Déjà un compte ?{' '}
-        <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700">
+        <Link to="/login" className="font-semibold text-signal-400 transition hover:text-signal-300">
           Se connecter
         </Link>
       </p>

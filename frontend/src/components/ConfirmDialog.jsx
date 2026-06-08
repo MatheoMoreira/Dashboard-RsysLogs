@@ -26,7 +26,7 @@ export default function ConfirmDialog({
         </>
       }
     >
-      <p className="text-sm text-slate-600">{message}</p>
+      <p className="text-sm text-fog-300">{message}</p>
     </Modal>
   )
 }

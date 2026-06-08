@@ -61,38 +61,39 @@ export default function AdminRoomsPage() {
   return (
     <div>
       <PageHeader
+        eyebrow="admin · rooms/manage"
         title="Gestion des salles"
         description="Créez, modifiez et supprimez les salles."
-        action={<Button onClick={openCreate}>Nouvelle salle</Button>}
+        action={<Button onClick={openCreate}>+ Nouvelle salle</Button>}
       />
 
       {rooms?.length === 0 ? (
         <EmptyState title="Aucune salle" description="Commencez par créer une salle." action={<Button onClick={openCreate}>Créer une salle</Button>} />
       ) : (
-        <Card className="overflow-hidden">
+        <Card className="reveal overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-5 py-3">Nom</th>
-                  <th className="px-5 py-3">Bâtiment</th>
-                  <th className="px-5 py-3">Étage</th>
-                  <th className="px-5 py-3">Capacité</th>
-                  <th className="px-5 py-3">Équipements</th>
-                  <th className="px-5 py-3 text-right">Actions</th>
+            <table className="min-w-full divide-y divide-ink-700 text-sm">
+              <thead className="bg-ink-900/50">
+                <tr className="label-mono text-left">
+                  <th className="px-5 py-3 font-normal">nom</th>
+                  <th className="px-5 py-3 font-normal">bâtiment</th>
+                  <th className="px-5 py-3 font-normal">étage</th>
+                  <th className="px-5 py-3 font-normal">cap.</th>
+                  <th className="px-5 py-3 font-normal">équipements</th>
+                  <th className="px-5 py-3 text-right font-normal">actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-ink-700">
                 {rooms.map((room) => (
-                  <tr key={room.id} className="hover:bg-slate-50">
-                    <td className="px-5 py-3 font-medium text-slate-800">{room.name}</td>
-                    <td className="px-5 py-3 text-slate-600">{room.building}</td>
-                    <td className="px-5 py-3 text-slate-600">{room.floor}</td>
-                    <td className="px-5 py-3 text-slate-600">{room.capacity}</td>
+                  <tr key={room.id} className="transition hover:bg-ink-800/40">
+                    <td className="px-5 py-3 font-medium text-fog-50">{room.name}</td>
+                    <td className="px-5 py-3 text-fog-400">{room.building}</td>
+                    <td className="px-5 py-3 font-mono text-fog-400 tabular-nums">{room.floor}</td>
+                    <td className="px-5 py-3 font-mono text-fog-400 tabular-nums">{room.capacity}</td>
                     <td className="px-5 py-3">
                       <div className="flex flex-wrap gap-1">
                         {room.equipment?.map((eq) => (
-                          <Badge key={eq.id} variant="gray">
+                          <Badge key={eq.id} variant="neutral">
                             {eq.name}
                           </Badge>
                         ))}
@@ -104,7 +105,7 @@ export default function AdminRoomsPage() {
                           Modifier
                         </Button>
                         <Button variant="danger" onClick={() => setDeleting(room)}>
-                          Supprimer
+                          Suppr.
                         </Button>
                       </div>
                     </td>

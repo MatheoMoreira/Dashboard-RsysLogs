@@ -6,9 +6,9 @@ import { Badge, Button, Card, EmptyState, PageLoader } from '../components/ui'
 
 function InfoRow({ label, value }) {
   return (
-    <div className="flex justify-between border-b border-slate-100 py-3 last:border-0">
-      <dt className="text-sm text-slate-500">{label}</dt>
-      <dd className="text-sm font-medium text-slate-800">{value}</dd>
+    <div className="flex items-center justify-between border-b border-ink-700 py-3 last:border-0">
+      <dt className="label-mono">{label}</dt>
+      <dd className="font-mono text-sm font-medium text-fog-100 tabular-nums">{value}</dd>
     </div>
   )
 }
@@ -23,52 +23,53 @@ export default function RoomDetailPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
+        eyebrow={`rooms · #${room.id}`}
         title={room.name}
-        description={`${room.building} · Étage ${room.floor}`}
+        description={`${room.building} · niveau ${room.floor}`}
         action={
           <Link to={`/reservations/new?room=${room.id}`}>
-            <Button>Réserver cette salle</Button>
+            <Button>Réserver →</Button>
           </Link>
         }
       />
 
       <div className="grid gap-5 md:grid-cols-2">
-        <Card className="p-6">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Informations</h3>
+        <Card className="reveal p-6">
+          <p className="label-mono mb-3">// informations</p>
           <dl>
-            <InfoRow label="Bâtiment" value={room.building} />
-            <InfoRow label="Étage" value={room.floor} />
-            <InfoRow label="Capacité" value={`${room.capacity} personnes`} />
-            <InfoRow label="Réservations" value={room.reservations_count ?? 0} />
+            <InfoRow label="bâtiment" value={room.building} />
+            <InfoRow label="étage" value={room.floor} />
+            <InfoRow label="capacité" value={`${room.capacity} pers`} />
+            <InfoRow label="réservations" value={room.reservations_count ?? 0} />
           </dl>
         </Card>
 
-        <Card className="p-6">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Équipements</h3>
+        <Card className="reveal p-6">
+          <p className="label-mono mb-3">// équipements</p>
           {room.equipment?.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {room.equipment.map((eq) => (
-                <Badge key={eq.id} variant="indigo">
+                <Badge key={eq.id} variant="signal">
                   {eq.name}
                 </Badge>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-slate-500">Aucun équipement renseigné.</p>
+            <p className="text-sm text-fog-500">Aucun équipement renseigné.</p>
           )}
         </Card>
       </div>
 
       {room.description && (
-        <Card className="mt-5 p-6">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Description</h3>
-          <p className="text-sm leading-relaxed text-slate-600">{room.description}</p>
+        <Card className="reveal mt-5 p-6">
+          <p className="label-mono mb-2">// description</p>
+          <p className="text-sm leading-relaxed text-fog-300">{room.description}</p>
         </Card>
       )}
 
       <div className="mt-6">
-        <Link to="/rooms" className="text-sm font-medium text-brand-600 hover:text-brand-700">
-          ← Retour à la liste des salles
+        <Link to="/rooms" className="font-mono text-xs text-signal-400 transition hover:text-signal-300">
+          ← retour aux salles
         </Link>
       </div>
     </div>

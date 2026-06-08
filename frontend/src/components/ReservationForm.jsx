@@ -57,7 +57,12 @@ export default function ReservationForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      {error && <div className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>}
+      {error && (
+        <div className="flex items-start gap-2 rounded-lg border border-alert-500/30 bg-alert-500/10 px-4 py-3 text-sm text-alert-400">
+          <span className="font-mono">!</span>
+          {error}
+        </div>
+      )}
 
       {!lockRoom && (
         <Field label="Salle" htmlFor="room_id">
