@@ -36,12 +36,16 @@ class StatsService
     {
         $since = Carbon::today()->subDays($days - 1);
 
+        // The `date` column is persisted as a datetime ("2026-06-08 00:00:00"),
+        // so we group on its DATE() part to get clean "Y-m-d" keys that match the
+        // lookup below. toBase() avoids the Eloquent cast re-mangling the keys.
         $rows = Reservation::query()
             ->where('date', '>=', $since->toDateString())
-            ->select('date', DB::raw('COUNT(*) as count'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->pluck('count', 'date');
+            ->toBase()
+            ->selectRaw('DATE(date) as day, COUNT(*) as count')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->pluck('count', 'day');
 
         $series = [];
         for ($i = 0; $i < $days; $i++) {
