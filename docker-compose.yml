@@ -1,0 +1,82 @@
+# ─────────────────────────────────────────────────────────────
+# Stack complet : Resa (émetteur de logs) -> rsyslog -> MariaDB
+#                 <- Dashboard PHP (lecture)
+# Les variables sont lues depuis le fichier .env voisin (cf. .env.example).
+# ─────────────────────────────────────────────────────────────
+
+services:
+
+  # 1) Base de centralisation des logs
+  mariadb:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # 2) Serveur rsyslog : reçoit les logs Resa et les insère en base
+  rsyslog:
+    build:
+      context: ./docker/rsyslog
+    restart: unless-stopped
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  # 3) Application Resa — backend Laravel (émet les logs vers rsyslog)
+  resa-backend:
+    build:
+      context: ./resa/backend
+      dockerfile: ../../docker/resa-backend.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT}:8000"
+    depends_on:
+      - rsyslog
+
+  # 4) Application Resa — frontend React (servi par nginx)
+  resa-frontend:
+    build:
+      context: ./resa/frontend
+      dockerfile: ../../docker/resa-frontend.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - resa-backend
+
+  # 5) Dashboard PHP (MVC maison) — visualise les logs centralisés
+  dashboard:
+    build:
+      context: ./dashboard
+    restart: unless-stopped
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DASHBOARD_PORT}:80"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+volumes:
+  mariadb_data:

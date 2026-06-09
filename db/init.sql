@@ -1,0 +1,32 @@
+-- ─────────────────────────────────────────────────────────────
+-- Schéma de la base de centralisation des logs
+--
+-- rsyslog reçoit les événements de l'application Resa (JSON sur une
+-- ligne) et les insère ici via le module ommysql. On stocke le JSON
+-- brut dans `raw_json` et on expose les champs utiles en colonnes
+-- générées (STORED) pour pouvoir filtrer/indexer sans re-parser.
+-- ─────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS events (
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    received_at  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    raw_json     TEXT        NOT NULL,
+
+    -- Champs promus depuis le JSON pour le filtrage/affichage.
+    -- NULLIF(..., 'null') : un champ JSON explicitement à null (ex. user_id
+    -- pour un échec de connexion) devient un vrai NULL SQL et non la chaîne
+    -- "null" — indispensable pour la colonne entière user_id.
+    event        VARCHAR(64)  GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.event')),     'null')) STORED,
+    level        VARCHAR(16)  GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.level')),     'null')) STORED,
+    channel      VARCHAR(32)  GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.channel')),   'null')) STORED,
+    user_id      INT          GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.user_id')),   'null')) STORED,
+    ip           VARCHAR(45)  GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.ip')),        'null')) STORED,
+    method       VARCHAR(8)   GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.method')),    'null')) STORED,
+    path         VARCHAR(255) GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.path')),      'null')) STORED,
+    event_time   VARCHAR(40)  GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.timestamp')), 'null')) STORED,
+
+    KEY idx_event       (event),
+    KEY idx_level       (level),
+    KEY idx_user        (user_id),
+    KEY idx_received_at (received_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
