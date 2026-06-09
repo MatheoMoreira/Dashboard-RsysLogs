@@ -49,10 +49,20 @@ if ! grep -q '^APP_KEY=base64:' .env; then
     php artisan key:generate --force
 fi
 
-# 4. Base SQLite + migrations + données de démonstration
-mkdir -p database
-[ -f database/database.sqlite ] || touch database/database.sqlite
-php artisan migrate:fresh --seed --force
+# 4. Base SQLite persistée (volume monté sur /data) + migrations.
+#    Comportement prod : on applique seulement les migrations, sans jamais
+#    réinitialiser ni re-seeder. Les données survivent aux redémarrages.
+#    Chargement initial des données (administrateur, salles…) — UNE seule
+#    fois, manuellement, après le premier démarrage :
+#        docker compose exec resa-backend php artisan db:seed --force
+DB_FILE="${DB_DATABASE:-/app/database/database.sqlite}"
+# Le chemin doit figurer dans le .env : `artisan serve` ne transmet aux
+# requêtes web que les variables du .env, pas l'environnement du conteneur.
+sed -i '/^#\? *DB_DATABASE=/d' .env
+echo "DB_DATABASE=${DB_FILE}" >> .env
+mkdir -p "$(dirname "$DB_FILE")"
+[ -f "$DB_FILE" ] || touch "$DB_FILE"
+php artisan migrate --force
 
 # 5. Vide les caches puis démarre le serveur Laravel
 php artisan config:clear

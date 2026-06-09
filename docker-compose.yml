@@ -50,8 +50,14 @@ services:
       context: ./resa/backend
       dockerfile: ../../docker/resa-backend.Dockerfile
     restart: unless-stopped
+    environment:
+      # Base SQLite stockée sur le volume persistant (hors de /app pour ne pas
+      # masquer les migrations). Les données survivent aux recréations de conteneur.
+      DB_DATABASE: /data/database.sqlite
     ports:
       - "${BACKEND_PORT}:8000"
+    volumes:
+      - resa_backend_data:/data
     depends_on:
       - rsyslog
 
@@ -88,3 +94,4 @@ services:
 
 volumes:
   mariadb_data:
+  resa_backend_data:

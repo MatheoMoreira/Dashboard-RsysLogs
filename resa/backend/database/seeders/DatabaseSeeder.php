@@ -17,20 +17,17 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        // --- Known accounts ----------------------------------------------
+        // --- Administrateur ----------------------------------------------
+        // Seul compte créé : l'administrateur. Les comptes utilisateurs sont
+        // ensuite créés via l'inscription dans l'application (pas de comptes
+        // de démonstration).
         $admin = User::factory()->admin()->create([
             'firstname' => 'Alice',
             'lastname' => 'Admin',
             'email' => 'admin@resa.test',
         ]);
 
-        $user = User::factory()->create([
-            'firstname' => 'Bob',
-            'lastname' => 'User',
-            'email' => 'user@resa.test',
-        ]);
-
-        $allUsers = User::factory()->count(8)->create()->push($user)->push($admin);
+        $allUsers = collect([$admin]);
 
         // --- Equipment ----------------------------------------------------
         $equipment = collect([
