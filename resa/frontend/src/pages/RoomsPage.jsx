@@ -25,7 +25,7 @@ export default function RoomsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="rooms · index"
+        eyebrow="Espaces"
         title="Salles"
         description="Parcourez les salles disponibles et réservez en un clic."
       />
@@ -49,8 +49,8 @@ export default function RoomsPage() {
                 </option>
               ))}
             </Select>
-            <span className="ml-auto hidden items-center font-mono text-xs text-fog-600 sm:flex">
-              {filtered.length} / {rooms?.length ?? 0} salles
+            <span className="ml-auto hidden items-center text-xs font-medium text-fog-500 sm:flex">
+              {filtered.length} sur {rooms?.length ?? 0} salles
             </span>
           </div>
 

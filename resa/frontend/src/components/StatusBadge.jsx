@@ -1,6 +1,6 @@
 import { Badge } from './ui'
 
-/** Maps a reservation status to a coloured console badge. */
+/** Maps a reservation status to a coloured badge. */
 export default function StatusBadge({ status }) {
   if (status === 'ACTIVE')
     return (

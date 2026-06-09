@@ -14,7 +14,7 @@ function Detail({ label, value }) {
   return (
     <div className="flex items-center justify-between">
       <dt className="label-mono">{label}</dt>
-      <dd className="font-mono text-sm font-medium text-fog-200 tabular-nums">{value}</dd>
+      <dd className="text-sm font-semibold text-fog-200 tabular-nums">{value}</dd>
     </div>
   )
 }
@@ -31,7 +31,7 @@ export default function MyReservationsPage() {
   const handleUpdate = async (payload) => {
     try {
       await reservationsApi.update(editing.id, payload)
-      toast.success('Réservation mise à jour · reservation_updated')
+      toast.success('Réservation mise à jour.')
       setEditing(null)
       reload()
     } catch (err) {
@@ -43,7 +43,7 @@ export default function MyReservationsPage() {
     setActionLoading(true)
     try {
       await reservationsApi.cancel(cancelling.id)
-      toast.success('Réservation annulée · reservation_cancelled')
+      toast.success('Réservation annulée.')
       setCancelling(null)
       reload()
     } catch (err) {
@@ -58,7 +58,7 @@ export default function MyReservationsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="reservations · mine"
+        eyebrow="Mon espace"
         title="Mes réservations"
         description="Consultez, modifiez ou annulez vos réservations."
         action={
@@ -87,10 +87,10 @@ export default function MyReservationsPage() {
               <div style={{ animationDelay: `${Math.min(i * 0.04, 0.3)}s` }}>
                 <div className="flex items-start justify-between">
                   <div className="min-w-0">
-                    <h3 className="truncate font-display text-lg font-bold text-fog-50">
+                    <h3 className="truncate font-display text-lg font-medium text-fog-50">
                       {res.room?.name || `Salle #${res.room_id}`}
                     </h3>
-                    <p className="font-mono text-xs text-fog-500">{res.room?.building}</p>
+                    <p className="text-xs text-fog-500">{res.room?.building}</p>
                   </div>
                   <StatusBadge status={res.status} />
                 </div>
@@ -101,7 +101,7 @@ export default function MyReservationsPage() {
                   <Detail label="participants" value={res.participants} />
                 </dl>
 
-                <p className="mt-4 rounded-lg border border-ink-700 bg-ink-900/50 px-3 py-2 text-sm text-fog-300">
+                <p className="mt-4 rounded-lg border border-ink-700 bg-ink-950 px-3 py-2 text-sm text-fog-300">
                   {res.purpose}
                 </p>
 

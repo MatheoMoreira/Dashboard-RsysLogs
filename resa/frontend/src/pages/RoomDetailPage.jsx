@@ -8,7 +8,7 @@ function InfoRow({ label, value }) {
   return (
     <div className="flex items-center justify-between border-b border-ink-700 py-3 last:border-0">
       <dt className="label-mono">{label}</dt>
-      <dd className="font-mono text-sm font-medium text-fog-100 tabular-nums">{value}</dd>
+      <dd className="text-sm font-semibold text-fog-100 tabular-nums">{value}</dd>
     </div>
   )
 }
@@ -23,29 +23,29 @@ export default function RoomDetailPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
-        eyebrow={`rooms · #${room.id}`}
+        eyebrow={`Salle #${room.id}`}
         title={room.name}
         description={`${room.building} · niveau ${room.floor}`}
         action={
           <Link to={`/reservations/new?room=${room.id}`}>
-            <Button>Réserver →</Button>
+            <Button>Réserver</Button>
           </Link>
         }
       />
 
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="reveal p-6">
-          <p className="label-mono mb-3">// informations</p>
+          <p className="label-mono mb-3">Informations</p>
           <dl>
-            <InfoRow label="bâtiment" value={room.building} />
-            <InfoRow label="étage" value={room.floor} />
-            <InfoRow label="capacité" value={`${room.capacity} pers`} />
-            <InfoRow label="réservations" value={room.reservations_count ?? 0} />
+            <InfoRow label="Bâtiment" value={room.building} />
+            <InfoRow label="Étage" value={room.floor} />
+            <InfoRow label="Capacité" value={`${room.capacity} pers.`} />
+            <InfoRow label="Réservations" value={room.reservations_count ?? 0} />
           </dl>
         </Card>
 
         <Card className="reveal p-6">
-          <p className="label-mono mb-3">// équipements</p>
+          <p className="label-mono mb-3">Équipements</p>
           {room.equipment?.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {room.equipment.map((eq) => (
@@ -62,14 +62,14 @@ export default function RoomDetailPage() {
 
       {room.description && (
         <Card className="reveal mt-5 p-6">
-          <p className="label-mono mb-2">// description</p>
+          <p className="label-mono mb-2">Description</p>
           <p className="text-sm leading-relaxed text-fog-300">{room.description}</p>
         </Card>
       )}
 
       <div className="mt-6">
-        <Link to="/rooms" className="font-mono text-xs text-signal-400 transition hover:text-signal-300">
-          ← retour aux salles
+        <Link to="/rooms" className="text-sm font-semibold text-signal-300 transition hover:text-signal-400">
+          ← Retour aux salles
         </Link>
       </div>
     </div>
