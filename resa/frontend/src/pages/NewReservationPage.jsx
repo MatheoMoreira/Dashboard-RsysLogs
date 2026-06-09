@@ -22,7 +22,7 @@ export default function NewReservationPage() {
   const handleSubmit = async (payload) => {
     try {
       await reservationsApi.create(payload)
-      toast.success('Réservation confirmée · reservation_created')
+      toast.success('Réservation confirmée.')
       navigate('/reservations')
     } catch (err) {
       // Surface explicit business errors (409 double booking, 422 capacity, …).
@@ -32,7 +32,7 @@ export default function NewReservationPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader eyebrow="reservations · create" title="Nouvelle réservation" description="Réservez une salle pour votre créneau." />
+      <PageHeader eyebrow="Réservation" title="Nouvelle réservation" description="Réservez une salle pour votre créneau." />
       <Card className="reveal p-6">
         <ReservationForm
           rooms={rooms}

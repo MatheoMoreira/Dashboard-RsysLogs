@@ -29,23 +29,23 @@ export default function DashboardPage() {
   return (
     <div>
       <PageHeader
-        eyebrow={`session · ${user?.email}`}
+        eyebrow="Tableau de bord"
         title={`Bonjour, ${user?.firstname}`}
         description="Aperçu de votre activité de réservation."
         action={
           isAdmin && (
             <Link to="/admin">
-              <Button variant="secondary">Console admin →</Button>
+              <Button variant="secondary">Espace admin</Button>
             </Link>
           )
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="réservations actives" code="active" value={stats.active} accent="ok" delay={0.05} />
-        <StatCard label="à venir" code="upcoming" value={stats.upcoming.length} accent="signal" delay={0.1} />
-        <StatCard label="annulées" code="cancelled" value={stats.cancelled} accent="alert" delay={0.15} />
-        <StatCard label="salles dispo" code="rooms" value={rooms?.length ?? '—'} accent="fog" delay={0.2} />
+        <StatCard label="Réservations actives" value={stats.active} accent="ok" delay={0.05} />
+        <StatCard label="À venir" value={stats.upcoming.length} accent="signal" delay={0.1} />
+        <StatCard label="Annulées" value={stats.cancelled} accent="alert" delay={0.15} />
+        <StatCard label="Salles disponibles" value={rooms?.length ?? '—'} accent="fog" delay={0.2} />
       </div>
 
       <div className="mt-8 grid gap-5 lg:grid-cols-3">
@@ -53,8 +53,8 @@ export default function DashboardPage() {
           <CardHeader
             title="Prochaines réservations"
             action={
-              <Link to="/reservations" className="font-mono text-xs text-signal-400 transition hover:text-signal-300">
-                tout voir →
+              <Link to="/reservations" className="text-sm font-semibold text-signal-300 transition hover:text-signal-400">
+                Tout voir
               </Link>
             }
           />
@@ -75,7 +75,7 @@ export default function DashboardPage() {
                   <li key={res.id} className="flex items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
                       <p className="truncate font-medium text-fog-100">{res.room?.name || `Salle #${res.room_id}`}</p>
-                      <p className="font-mono text-xs text-fog-500">
+                      <p className="text-xs text-fog-500">
                         {formatDate(res.date)} · {formatTimeRange(res.start_time, res.end_time)}
                       </p>
                     </div>

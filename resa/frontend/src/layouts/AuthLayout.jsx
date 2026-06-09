@@ -1,78 +1,76 @@
 import { Outlet } from 'react-router-dom'
 
-const logLines = [
-  { t: 'info', e: 'user_login', d: 'status 200' },
-  { t: 'info', e: 'reservation_created', d: 'room_id 5' },
-  { t: 'warn', e: 'double_booking_attempt', d: 'status 409' },
-  { t: 'info', e: 'rooms_list_viewed', d: 'count 10' },
-  { t: 'warn', e: 'failed_login', d: 'status 401' },
-  { t: 'info', e: 'http_request', d: '2.6 ms' },
+const highlights = [
+  { title: 'Réservation en quelques clics', desc: 'Trouvez une salle disponible et confirmez votre créneau instantanément.' },
+  { title: 'Vos espaces, centralisés', desc: 'Salles, équipements et capacités réunis en un seul endroit.' },
+  { title: 'Une vue claire de votre activité', desc: 'Suivez vos réservations à venir, passées et annulées.' },
 ]
 
-const dot = { info: 'bg-ok-400', warn: 'bg-warn-400', alert: 'bg-alert-400' }
-
-/** Split "console" layout for the public auth pages. */
+/** Split layout for the public auth pages: editorial brand panel + form. */
 export default function AuthLayout() {
   return (
     <div className="grid min-h-full lg:grid-cols-2">
-      {/* Left — editorial console panel */}
-      <div className="relative hidden flex-col justify-between overflow-hidden border-r border-ink-700 bg-ink-900/40 p-12 lg:flex">
-        <div className="absolute inset-0 opacity-60" style={{
-          backgroundImage:
-            'radial-gradient(circle at 30% 20%, rgba(198,242,78,0.10), transparent 45%)',
-        }} />
+      {/* Left — editorial brand panel */}
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-fog-50 p-12 text-white lg:flex">
+        <div
+          className="absolute inset-0 opacity-90"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 25% 15%, rgba(13,148,136,0.35), transparent 50%), radial-gradient(circle at 90% 90%, rgba(13,148,136,0.18), transparent 45%)',
+          }}
+        />
 
         <div className="relative flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-signal-400 font-display text-xl font-bold text-ink-950">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal-400 font-display text-xl font-semibold text-white">
             R
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-ok-400 ring-2 ring-ink-900 pulse-dot" />
           </div>
           <div>
-            <p className="font-display text-lg font-bold tracking-tight text-fog-50">resa</p>
-            <p className="label-mono">observability console</p>
+            <p className="font-display text-lg font-semibold tracking-tight">Resa</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-white/50">Réservation de salles</p>
           </div>
         </div>
 
         <div className="relative">
-          <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-fog-50">
-            Réservez.
+          <h1 className="font-display text-5xl font-medium leading-[1.08] tracking-tight text-white">
+            Réservez vos salles,
             <br />
-            <span className="text-signal-400">Journalisez.</span>
-            <br />
-            Observez.
+            <span className="text-signal-400">simplement.</span>
           </h1>
-          <p className="mt-5 max-w-sm text-sm leading-relaxed text-fog-400">
-            Une plateforme de réservation de salles instrumentée de bout en bout —
-            chaque action produit un log JSON structuré, prêt pour rsyslog.
+          <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/60">
+            La plateforme qui simplifie la gestion et la réservation de vos espaces
+            de travail au quotidien.
           </p>
         </div>
 
-        {/* Faux live log stream */}
-        <div className="relative space-y-1.5 font-mono text-xs">
-          {logLines.map((l, i) => (
-            <div
+        <ul className="relative space-y-4">
+          {highlights.map((h, i) => (
+            <li
               key={i}
-              className="reveal flex items-center gap-3 text-fog-500"
-              style={{ animationDelay: `${0.3 + i * 0.12}s` }}
+              className="reveal flex gap-3"
+              style={{ animationDelay: `${0.2 + i * 0.12}s` }}
             >
-              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot[l.t]}`} />
-              <span className="text-fog-600">{'{'}</span>
-              <span className="text-signal-300">"{l.e}"</span>
-              <span className="text-fog-600">·</span>
-              <span className="text-fog-400">{l.d}</span>
-            </div>
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-signal-400/20 text-signal-400">
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-white">{h.title}</p>
+                <p className="text-sm text-white/50">{h.desc}</p>
+              </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
 
       {/* Right — form */}
       <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal-400 font-display text-lg font-bold text-ink-950">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-signal-400 font-display text-lg font-semibold text-white">
               R
             </div>
-            <p className="font-display text-lg font-bold tracking-tight text-fog-50">resa</p>
+            <p className="font-display text-lg font-semibold tracking-tight text-fog-50">Resa</p>
           </div>
           <Outlet />
         </div>

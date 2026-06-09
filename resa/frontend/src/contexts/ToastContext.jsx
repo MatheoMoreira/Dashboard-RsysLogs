@@ -27,9 +27,15 @@ export function ToastProvider({ children }) {
   }
 
   const styles = {
-    success: 'border-ok-400/40 text-ok-400',
-    error: 'border-alert-500/40 text-alert-400',
+    success: 'border-ok-400/30 text-ok-400',
+    error: 'border-alert-500/30 text-alert-400',
     info: 'border-ink-600 text-fog-200',
+  }
+
+  const icons = {
+    success: 'M20 6 9 17l-5-5',
+    error: 'M18 6 6 18M6 6l12 12',
+    info: 'M12 8v4m0 4h.01',
   }
 
   return (
@@ -40,9 +46,11 @@ export function ToastProvider({ children }) {
           <button
             key={toast.id}
             onClick={() => remove(toast.id)}
-            className={`reveal flex items-start gap-2 rounded-lg border bg-ink-850/95 px-4 py-3 text-left text-sm font-medium shadow-xl backdrop-blur-md transition hover:bg-ink-800 ${styles[toast.type]}`}
+            className={`reveal flex items-start gap-2.5 rounded-xl border bg-white px-4 py-3 text-left text-sm font-medium shadow-lg transition hover:bg-ink-950 ${styles[toast.type]}`}
           >
-            <span className="mt-0.5 font-mono text-xs opacity-70">▸</span>
+            <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d={icons[toast.type]} />
+            </svg>
             <span>{toast.message}</span>
           </button>
         ))}

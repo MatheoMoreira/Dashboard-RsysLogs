@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="admin · users/manage"
+        eyebrow="Administration"
         title="Gestion des utilisateurs"
         description="Créez, modifiez les rôles et supprimez les comptes."
         action={<Button onClick={openCreate}>+ Nouvel utilisateur</Button>}
@@ -71,29 +71,29 @@ export default function AdminUsersPage() {
       <Card className="reveal overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-ink-700 text-sm">
-            <thead className="bg-ink-900/50">
+            <thead className="bg-ink-950">
               <tr className="label-mono text-left">
-                <th className="px-5 py-3 font-normal">nom</th>
-                <th className="px-5 py-3 font-normal">email</th>
-                <th className="px-5 py-3 font-normal">rôle</th>
-                <th className="px-5 py-3 font-normal">résa</th>
-                <th className="px-5 py-3 text-right font-normal">actions</th>
+                <th className="px-5 py-3 font-semibold">Nom</th>
+                <th className="px-5 py-3 font-semibold">E-mail</th>
+                <th className="px-5 py-3 font-semibold">Rôle</th>
+                <th className="px-5 py-3 font-semibold">Résa.</th>
+                <th className="px-5 py-3 text-right font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-700">
               {users.map((u) => (
-                <tr key={u.id} className="transition hover:bg-ink-800/40">
-                  <td className="px-5 py-3 font-medium text-fog-50">
+                <tr key={u.id} className="transition hover:bg-ink-950">
+                  <td className="px-5 py-3 font-medium text-fog-100">
                     {u.full_name}
-                    {u.id === currentUser?.id && <span className="ml-2 font-mono text-[0.625rem] text-fog-600">(vous)</span>}
+                    {u.id === currentUser?.id && <span className="ml-2 text-[0.6875rem] font-medium text-fog-500">(vous)</span>}
                   </td>
-                  <td className="px-5 py-3 font-mono text-xs text-fog-400">{u.email}</td>
+                  <td className="px-5 py-3 text-xs text-fog-400">{u.email}</td>
                   <td className="px-5 py-3">
                     <Badge variant={u.role === 'ADMIN' ? 'signal' : 'neutral'}>
-                      {u.role === 'ADMIN' ? 'admin' : 'user'}
+                      {u.role === 'ADMIN' ? 'Admin' : 'Membre'}
                     </Badge>
                   </td>
-                  <td className="px-5 py-3 font-mono text-fog-400 tabular-nums">{u.reservations_count ?? 0}</td>
+                  <td className="px-5 py-3 text-fog-400 tabular-nums">{u.reservations_count ?? 0}</td>
                   <td className="px-5 py-3">
                     <div className="flex justify-end gap-2">
                       <Button variant="secondary" onClick={() => openEdit(u)}>

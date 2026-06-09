@@ -1,45 +1,49 @@
 @import "tailwindcss";
 
 /* ============================================================== Design system
-   "Observability Console" — a dark, technical-editorial aesthetic evoking
-   infrastructure control rooms and log terminals. Warm near-black surfaces,
-   hairline borders, an electric "signal" accent, and monospace data labels.
+   "Corporate Editorial" — a light, refined business aesthetic. Airy off-white
+   surfaces, soft hairline borders, a confident teal accent, and an elegant
+   serif display paired with a clean sans body.
    ============================================================================ */
 
 @theme {
-  --font-display: "Bricolage Grotesque", ui-sans-serif, sans-serif;
-  --font-sans: "Hanken Grotesk", ui-sans-serif, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* No more terminal mono — leftover `font-mono` usages fall back to the sans
+     so nothing reads like a console. */
+  --font-mono: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* Surfaces — warm near-black, never pure #000 */
-  --color-ink-950: #0b0c0f;
-  --color-ink-900: #0f1117;
-  --color-ink-850: #13151c;
-  --color-ink-800: #171a22;
-  --color-ink-750: #1c1f29;
-  --color-ink-700: #232733;
-  --color-ink-600: #2c313e;
+  /* Surfaces — light, cool off-whites (ink scale inverted: low = page, high = lines) */
+  --color-ink-950: #f7f9fb;  /* app background */
+  --color-ink-900: #ffffff;  /* primary surface / sidebar */
+  --color-ink-850: #ffffff;  /* cards (paired with shadow) */
+  --color-ink-800: #f1f4f8;  /* subtle fills, secondary buttons */
+  --color-ink-750: #e8edf3;  /* hover fills */
+  --color-ink-700: #e4e9f0;  /* hairline borders */
+  --color-ink-600: #cfd8e3;  /* stronger borders / rings */
 
-  /* Text — warm parchment, not cold white */
-  --color-fog-50: #f3f1ea;
-  --color-fog-100: #e7e4da;
-  --color-fog-300: #b4b7c0;
-  --color-fog-500: #888d99;
-  --color-fog-600: #646a78;
+  /* Text — cool slate, darkest at the top of the scale */
+  --color-fog-50: #0f1b2d;   /* headings */
+  --color-fog-100: #1f2c3d;  /* body strong */
+  --color-fog-200: #334155;
+  --color-fog-300: #475569;
+  --color-fog-400: #5d6b7e;
+  --color-fog-500: #6b7a8d;  /* muted labels */
+  --color-fog-600: #94a3b4;  /* faint */
 
-  /* Signal accent — electric lime (monitoring "OK") */
-  --color-signal-300: #d6f97a;
-  --color-signal-400: #c6f24e;
-  --color-signal-500: #aee02f;
-  --color-signal-600: #8fbe1f;
+  /* Signal accent — corporate teal */
+  --color-signal-300: #0f766e;  /* accent text / links (readable on white) */
+  --color-signal-400: #0d9488;  /* primary solid fill */
+  --color-signal-500: #0b8276;
+  --color-signal-600: #115e59;  /* deepest, gradients */
 
-  /* Status */
-  --color-ok-400: #5ee08a;
-  --color-warn-400: #f4c152;
-  --color-alert-400: #ff6f6f;
-  --color-alert-500: #f24b4b;
+  /* Status — calibrated for light backgrounds */
+  --color-ok-400: #059669;
+  --color-warn-400: #d97706;
+  --color-alert-400: #dc2626;
+  --color-alert-500: #ef4444;
 
-  --radius-panel: 14px;
+  --radius-panel: 16px;
 }
 
 /* ---------------------------------------------------------------- Base layer */
@@ -56,26 +60,27 @@
     color: var(--color-fog-100);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    /* Layered atmosphere: faint dot-grid + a soft signal-tinted glow */
+    text-rendering: optimizeLegibility;
+    /* Very soft, near-white atmosphere — a faint teal whisper at the top. */
     background-image:
-      radial-gradient(circle at 18% -10%, rgba(198, 242, 78, 0.07), transparent 42%),
-      radial-gradient(circle at 100% 0%, rgba(120, 140, 255, 0.05), transparent 38%),
-      radial-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 22px 22px;
+      radial-gradient(circle at 15% -10%, rgba(13, 148, 136, 0.05), transparent 40%),
+      radial-gradient(circle at 100% 0%, rgba(15, 23, 42, 0.03), transparent 45%);
     background-attachment: fixed;
   }
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: var(--color-fog-50);
   }
 
   ::selection {
     background: var(--color-signal-400);
-    color: var(--color-ink-950);
+    color: #ffffff;
   }
 
-  /* Custom scrollbars to match the console feel */
+  /* Light, slim scrollbars */
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-ink-600) transparent;
@@ -85,50 +90,54 @@
     height: 10px;
   }
   *::-webkit-scrollbar-thumb {
-    background: var(--color-ink-700);
+    background: var(--color-ink-600);
     border-radius: 99px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: var(--color-ink-600);
+    background: var(--color-fog-600);
     background-clip: padding-box;
   }
 
-  /* Dark form controls (date/time pickers) */
+  /* Light form controls (date/time pickers) */
   input[type="date"],
   input[type="time"],
   input[type="number"] {
-    color-scheme: dark;
+    color-scheme: light;
   }
 }
 
 /* ----------------------------------------------------- Reusable component CSS */
 @layer components {
-  /* Monospace "log key" label */
+  /* Refined uppercase micro-label (replaces the old monospace "log key") */
   .label-mono {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 0.6875rem;
-    letter-spacing: 0.14em;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-fog-500);
   }
 
   .panel {
-    /* Fond quasi-opaque au lieu d'un backdrop-filter : même rendu "verre"
-       sans le coût de compositing, multiplié par carte dans les grilles. */
-    background: color-mix(in oklab, var(--color-ink-850) 96%, transparent);
+    background: var(--color-ink-900);
     border: 1px solid var(--color-ink-700);
     border-radius: var(--radius-panel);
+    box-shadow:
+      0 1px 2px rgba(15, 27, 45, 0.04),
+      0 8px 24px -16px rgba(15, 27, 45, 0.12);
   }
 
   .hairline {
     border-color: var(--color-ink-700);
   }
 
-  /* Glow used on the primary signal action */
+  /* Soft elevation on the primary action — no neon, just a confident lift. */
   .signal-glow {
-    box-shadow: 0 0 0 1px rgba(198, 242, 78, 0.3), 0 8px 30px -12px rgba(198, 242, 78, 0.5);
+    box-shadow:
+      0 1px 2px rgba(11, 95, 89, 0.18),
+      0 10px 24px -12px rgba(13, 148, 136, 0.45);
   }
 }
 
