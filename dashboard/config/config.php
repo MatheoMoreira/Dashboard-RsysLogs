@@ -17,6 +17,11 @@ return [
         'password' => getenv('DB_PASSWORD') ?: 'rsyslog_pwd',
     ],
 
+    // Fuseau d'AFFICHAGE. Les journaux sont stockés en UTC (horodatage
+    // canonique, non ambigu) ; le dashboard les convertit vers ce fuseau
+    // pour les présenter en heure locale.
+    'timezone' => getenv('DASHBOARD_TZ') ?: 'Europe/Paris',
+
     // Regroupement des types d'événements par catégorie métier (cf. README Resa)
     'categories' => [
         'Authentification' => ['user_registered', 'user_login', 'user_logout', 'failed_login'],

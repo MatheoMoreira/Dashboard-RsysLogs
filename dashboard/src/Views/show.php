@@ -12,14 +12,14 @@ $pretty = is_array($decoded)
 <h1>Événement #<?= (int) $event['id'] ?> — <code><?= e($event['event']) ?></code></h1>
 
 <table class="detail">
-    <tr><th>Reçu le</th><td><?= e($event['received_at']) ?></td></tr>
+    <tr><th>Reçu le</th><td><?= fmt_dt($event['received_at']) ?></td></tr>
     <tr><th>Niveau</th><td><span class="level level-<?= e($event['level']) ?>"><?= e($event['level']) ?></span></td></tr>
     <tr><th>Canal</th><td><?= e($event['channel']) ?></td></tr>
     <tr><th>User ID</th><td><?= e($event['user_id']) ?></td></tr>
     <tr><th>IP</th><td><?= e($event['ip']) ?></td></tr>
     <tr><th>Méthode</th><td><?= e($event['method']) ?></td></tr>
     <tr><th>Chemin</th><td><?= e($event['path']) ?></td></tr>
-    <tr><th>Horodatage applicatif</th><td><?= e($event['event_time']) ?></td></tr>
+    <tr><th>Horodatage applicatif</th><td><?= fmt_dt($event['event_time']) ?> <span class="muted">(source : <?= e($event['event_time']) ?>)</span></td></tr>
 </table>
 
 <h2>JSON brut</h2>

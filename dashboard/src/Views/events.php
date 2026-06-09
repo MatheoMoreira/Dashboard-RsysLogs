@@ -65,7 +65,7 @@ function qs(array $overrides): string
         <?php endif; ?>
         <?php foreach ($rows as $row): ?>
             <tr>
-                <td class="nowrap"><?= e($row['received_at']) ?></td>
+                <td class="nowrap"><?= fmt_dt($row['received_at'], 'd/m H:i:s') ?></td>
                 <td><code><?= e($row['event']) ?></code></td>
                 <td><span class="level level-<?= e($row['level']) ?>"><?= e($row['level']) ?></span></td>
                 <td><?= e($row['user_id']) ?></td>
