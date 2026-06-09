@@ -16,6 +16,7 @@ function e(mixed $value): string
 
 $router = new Router();
 $router->get('/',             DashboardController::class, 'index');
+$router->get('/api/stats',    DashboardController::class, 'stats');
 $router->get('/events',       EventsController::class,    'index');
 $router->get('/events/show',  EventsController::class,    'show');
 

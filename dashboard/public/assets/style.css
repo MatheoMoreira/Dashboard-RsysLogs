@@ -68,7 +68,20 @@ h2 { font-size: 1.05rem; margin: 0 0 14px; color: var(--muted); text-transform: 
 .card-alert .card-value { color: var(--alert); }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 760px) { .grid-2, .cards { grid-template-columns: 1fr; } }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+@media (max-width: 760px) { .grid-2, .grid-3, .cards { grid-template-columns: 1fr; } }
+.grid-3 h3 { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 10px; }
+
+/* Panneau sécurité : liseré d'alerte pour le distinguer */
+.panel-security { border-color: var(--alert); }
+.panel-security h2 { color: var(--alert); }
+.bar-danger { background: linear-gradient(90deg, var(--alert), var(--warn)); }
+
+/* Journal des derniers événements sensibles */
+.sec-feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sec-feed li { display: flex; align-items: center; gap: 8px; font-size: .85rem; }
+.sec-feed a { color: var(--accent); text-decoration: none; }
+.sec-feed .muted { margin-left: auto; font-size: .75rem; }
 
 .panel {
     background: var(--bg-card);

@@ -106,6 +106,80 @@ final class EventModel
     }
 
     /**
+     * Répartition détaillée des événements de sécurité (par type).
+     *
+     * @param string[] $securityEvents
+     * @return array<string, int> type d'événement => nombre
+     */
+    public function securityBreakdown(array $securityEvents): array
+    {
+        if ($securityEvents === []) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($securityEvents), '?'));
+        $stmt = $this->db->prepare(
+            "SELECT event, COUNT(*) AS n FROM events
+             WHERE event IN ({$placeholders})
+             GROUP BY event ORDER BY n DESC"
+        );
+        $stmt->execute($securityEvents);
+
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $result[$row['event']] = (int) $row['n'];
+        }
+        return $result;
+    }
+
+    /**
+     * Adresses IP les plus actives parmi les événements de sécurité.
+     *
+     * @param string[] $securityEvents
+     * @return array<string, int> ip => nombre d'événements sensibles
+     */
+    public function topSecurityIps(array $securityEvents, int $limit = 5): array
+    {
+        if ($securityEvents === []) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($securityEvents), '?'));
+        $stmt = $this->db->prepare(
+            "SELECT ip, COUNT(*) AS n FROM events
+             WHERE event IN ({$placeholders}) AND ip IS NOT NULL
+             GROUP BY ip ORDER BY n DESC LIMIT {$limit}"
+        );
+        $stmt->execute($securityEvents);
+
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $result[$row['ip']] = (int) $row['n'];
+        }
+        return $result;
+    }
+
+    /**
+     * Derniers événements de sécurité (pour le journal du panneau dédié).
+     *
+     * @param string[] $securityEvents
+     * @return list<array<string,mixed>>
+     */
+    public function recentSecurity(array $securityEvents, int $limit = 8): array
+    {
+        if ($securityEvents === []) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($securityEvents), '?'));
+        $stmt = $this->db->prepare(
+            "SELECT id, received_at, event, level, user_id, ip, path
+             FROM events
+             WHERE event IN ({$placeholders})
+             ORDER BY id DESC LIMIT {$limit}"
+        );
+        $stmt->execute($securityEvents);
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Liste paginée et filtrée des événements.
      *
      * @param array{event?:string,level?:string,user_id?:string,date_from?:string,date_to?:string} $filters
