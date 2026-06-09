@@ -78,6 +78,8 @@ services:
       # Connexion via le compte LECTURE SEULE (jamais le compte rsyslog).
       DB_USER: ${DASHBOARD_DB_USER}
       DB_PASSWORD: ${DASHBOARD_DB_PASSWORD}
+      # Fuseau d'affichage (conversion depuis l'UTC stocké).
+      DASHBOARD_TZ: ${DASHBOARD_TZ}
     ports:
       - "${DASHBOARD_PORT}:80"
     depends_on:

@@ -77,7 +77,7 @@ $maxHourly = $hourly ? max($hourly) : 0;
                         <li>
                             <span class="level level-<?= e($row['level']) ?>"><?= e($row['level']) ?></span>
                             <a href="/events/show?id=<?= (int) $row['id'] ?>"><?= e($row['event']) ?></a>
-                            <span class="muted nowrap"><?= e($row['ip'] ?? '—') ?> · <?= e(substr((string) $row['received_at'], 11, 5)) ?></span>
+                            <span class="muted nowrap"><?= e($row['ip'] ?? '—') ?> · <?= fmt_dt($row['received_at'], 'H:i') ?></span>
                         </li>
                     <?php endforeach; ?>
                 </ul>
@@ -127,9 +127,9 @@ $maxHourly = $hourly ? max($hourly) : 0;
     <?php else: ?>
         <div class="timeline">
             <?php foreach ($hourly as $slot => $count): ?>
-                <div class="tl-col" title="<?= e($slot) ?> — <?= $count ?> évén.">
+                <div class="tl-col" title="<?= fmt_dt($slot, 'd/m H:i') ?> — <?= $count ?> évén.">
                     <span class="tl-bar" style="height: <?= $maxHourly ? round($count / $maxHourly * 100) : 0 ?>%"></span>
-                    <span class="tl-label"><?= e(substr((string) $slot, 11, 2)) ?>h</span>
+                    <span class="tl-label"><?= fmt_dt($slot, 'H') ?>h</span>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -152,7 +152,10 @@ $maxHourly = $hourly ? max($hourly) : 0;
     </table>
 </section>
 
-<p class="muted center" id="refresh-status">Rafraîchissement automatique toutes les 15 s.</p>
+<p class="muted center" id="refresh-status">
+    Heures affichées en <?= e(date_default_timezone_get()) ?> (journaux stockés en UTC).
+    Rafraîchissement automatique toutes les 15 s.
+</p>
 
 <script>
 // Rafraîchissement progressif des compteurs sans recharger la page.
