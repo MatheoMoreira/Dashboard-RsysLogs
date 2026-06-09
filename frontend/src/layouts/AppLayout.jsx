@@ -36,7 +36,7 @@ export default function AppLayout() {
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-700 bg-ink-950/80 px-4 py-3 backdrop-blur-xl sm:px-6">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-700 bg-ink-950 px-4 py-3 sm:px-6">
           <button
             className="rounded-lg p-2 font-mono text-fog-400 hover:bg-ink-800 lg:hidden"
             onClick={() => setMobileOpen(true)}

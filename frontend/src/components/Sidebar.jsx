@@ -56,7 +56,7 @@ export default function Sidebar({ onNavigate }) {
   const { isAdmin } = useAuth()
 
   return (
-    <div className="flex h-full flex-col border-r border-ink-700 bg-ink-900/60 pb-6 backdrop-blur-xl">
+    <div className="flex h-full flex-col border-r border-ink-700 bg-ink-900 pb-6">
       <div className="flex items-center gap-3 px-6 py-5">
         <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-signal-400 font-display text-lg font-bold text-ink-950">
           R
