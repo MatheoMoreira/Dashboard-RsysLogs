@@ -66,7 +66,7 @@ docker compose ps             # mariadb healthy, autres services up
 > docker compose exec resa-backend php artisan db:seed --force
 > ```
 
-- **Application Resa** : <http://localhost:5173> — administrateur `admin@resa.test` / `password`
+- **Application Resa** : <http://localhost> — administrateur `admin@resa.test` / `password`
 - **Dashboard logs**   : <http://localhost:8080>
 
 > Aucun compte de démonstration n'est exposé : les utilisateurs s'inscrivent
@@ -88,7 +88,7 @@ docker compose exec mariadb \
 
 | Service        | Rôle                                                       | Port  |
 |----------------|------------------------------------------------------------|-------|
-| `resa-frontend`| SPA React servie par nginx (proxy `/api`)                  | 5173  |
+| `resa-frontend`| SPA React servie par nginx (proxy `/api`)                  | 80    |
 | `resa-backend` | API Laravel ; forward des événements JSON vers rsyslog     | 8000  |
 | `rsyslog`      | Réception UDP/TCP 514 → insertion MariaDB (`ommysql`)      | —     |
 | `mariadb`      | Base `rsyslog_dashboard`, table `events`                   | 3306  |
