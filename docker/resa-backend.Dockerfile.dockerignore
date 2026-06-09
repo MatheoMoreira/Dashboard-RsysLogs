@@ -1,0 +1,7 @@
+# Artefacts régénérés dans l'image (build context = ../Resa/backend)
+vendor
+node_modules
+.env
+storage/logs/*.log
+database/database.sqlite
+.git
