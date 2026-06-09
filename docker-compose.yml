@@ -15,11 +15,16 @@ services:
       MARIADB_DATABASE: ${DB_NAME}
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
+      # Lues par le script d'init 20-dashboard-grant.sh pour créer le
+      # compte de consultation en lecture seule.
+      DASHBOARD_DB_USER: ${DASHBOARD_DB_USER}
+      DASHBOARD_DB_PASSWORD: ${DASHBOARD_DB_PASSWORD}
     ports:
       - "${DB_PORT}:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+      - ./db/20-dashboard-grant.sh:/docker-entrypoint-initdb.d/20-dashboard-grant.sh:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
@@ -70,8 +75,9 @@ services:
       DB_HOST: mariadb
       DB_PORT: 3306
       DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      # Connexion via le compte LECTURE SEULE (jamais le compte rsyslog).
+      DB_USER: ${DASHBOARD_DB_USER}
+      DB_PASSWORD: ${DASHBOARD_DB_PASSWORD}
     ports:
       - "${DASHBOARD_PORT}:80"
     depends_on:

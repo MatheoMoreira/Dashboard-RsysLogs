@@ -35,14 +35,42 @@ final class DashboardController extends Controller
             $byCategory[$category] = $sum;
         }
 
+        $security = $config['security_events'];
+
         $this->view('dashboard', [
             'total'        => $model->total(),
             'last24h'      => $model->totalSince('24 HOUR'),
-            'securityHits' => $model->securityCount($config['security_events']),
+            'securityHits' => $model->securityCount($security),
             'byCategory'   => $byCategory,
             'byEvent'      => $countByEvent,
             'byLevel'      => $model->countByLevel(),
             'hourly'       => $model->hourlyLast24h(),
+            'secBreakdown' => $model->securityBreakdown($security),
+            'secTopIps'    => $model->topSecurityIps($security),
+            'secRecent'    => $model->recentSecurity($security),
         ], 'Vue d\'ensemble');
+    }
+
+    /**
+     * Endpoint JSON consommé en AJAX par la page d'accueil pour rafraîchir
+     * les compteurs sans recharger toute la page (progressive enhancement).
+     */
+    public function stats(): void
+    {
+        if (!Database::isReady()) {
+            http_response_code(503);
+            $this->json(['ready' => false]);
+            return;
+        }
+
+        $config = require dirname(__DIR__, 2) . '/config/config.php';
+        $model = new EventModel();
+
+        $this->json([
+            'ready'        => true,
+            'total'        => $model->total(),
+            'last24h'      => $model->totalSince('24 HOUR'),
+            'securityHits' => $model->securityCount($config['security_events']),
+        ]);
     }
 }

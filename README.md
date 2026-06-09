@@ -11,7 +11,7 @@ visualiser dans un **dashboard PHP** (architecture **MVC**, programmation modula
 
 ```
 ┌────────────────┐   /api    ┌────────────────┐  logs JSON   ┌──────────┐  INSERT   ┌──────────┐
-│ resa-frontend  │ ────────▶ │  resa-backend  │ ───UDP:514─▶ │ rsyslog  │ ────────▶ │ mariadb  │
+│ resa-frontend  │ ────────▶ │  resa-backend  │ ───TCP:514─▶ │ rsyslog  │ ────────▶ │ mariadb  │
 │ (React/nginx)  │           │ (Laravel 8.4)  │              │ (ommysql)│           │  events  │
 └────────────────┘           └────────────────┘              └──────────┘           └────┬─────┘
                                                                                           │ SELECT
@@ -80,6 +80,21 @@ docker compose exec mariadb \
 | `rsyslog`      | Réception UDP/TCP 514 → insertion MariaDB (`ommysql`)      | —     |
 | `mariadb`      | Base `rsyslog_dashboard`, table `events`                   | 3306  |
 | `dashboard`    | Dashboard PHP MVC (lecture des logs)                       | 8080  |
+
+## Sécurité — moindre privilège sur les journaux
+
+Deux comptes MariaDB distincts sont utilisés (séparation des rôles, recommandation
+ANSSI sur la protection de l'intégrité des journaux) :
+
+| Compte         | Droits                       | Utilisé par |
+|----------------|------------------------------|-------------|
+| `rsyslog`      | `INSERT` (écriture des logs) | `rsyslog`   |
+| `dashboard_ro` | `SELECT` (lecture seule)     | `dashboard` |
+
+Le dashboard ne peut **jamais** modifier ni supprimer un événement : une éventuelle
+faille de l'interface de consultation ne permet pas d'altérer les journaux. Le compte
+en lecture seule est créé automatiquement au premier démarrage par
+`db/20-dashboard-grant.sh`.
 
 ## Workflow git
 
