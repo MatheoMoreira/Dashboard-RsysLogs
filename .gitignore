@@ -1,0 +1,21 @@
+# ─── Environnement (ne jamais versionner les secrets) ───
+.env
+
+# ─── Dépendances PHP ───
+**/vendor/
+composer.phar
+**/composer.phar
+
+# ─── Dépendances & build JS ───
+**/node_modules/
+resa/frontend/dist/
+
+# ─── Laravel (runtime) ───
+resa/backend/.env
+resa/backend/storage/logs/*.log
+resa/backend/storage/framework/cache/*
+resa/backend/database/*.sqlite
+
+# ─── Divers ───
+.DS_Store
+*.log
