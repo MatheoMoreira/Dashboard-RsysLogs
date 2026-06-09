@@ -1,0 +1,26 @@
+@startuml synoptique
+' Schéma synoptique — flux de centralisation des journaux
+skinparam defaultTextAlignment center
+
+[resa-frontend\n(React / nginx)] as FE
+[resa-backend\n(Laravel)]       as BE
+[rsyslog\n(ommysql)]            as RS
+database "MariaDB\n(events)"     as DB
+[dashboard\n(PHP MVC)]          as DASH
+
+FE -right-> BE : requêtes /api
+BE -down-> RS  : événements métier + http_request\n(JSON, TCP 514)
+FE -down-> RS  : http_access (tous les accès,\nIP réelle — scanners visibles)
+RS -right-> DB : INSERT (ommysql)\ncompte rsyslog
+DB -up-> DASH  : SELECT\ncompte dashboard_ro (lecture seule)
+
+note right of DB
+  raw_json + colonnes générées
+  indexées (event, level, user_id,
+  ip, received_at)
+end note
+
+note bottom of DASH
+  Vue d'ensemble · Liste · Détail
+end note
+@enduml

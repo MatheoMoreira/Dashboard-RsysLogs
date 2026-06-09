@@ -204,6 +204,11 @@ final class EventModel
         return ['rows' => $stmt->fetchAll(), 'total' => $total];
     }
 
+    /**
+     * Retourne un événement par son identifiant, ou null s'il n'existe pas.
+     *
+     * @return array<string, mixed>|null
+     */
     public function find(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM events WHERE id = ?');
