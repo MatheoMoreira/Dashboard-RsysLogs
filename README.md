@@ -109,6 +109,25 @@ faille de l'interface de consultation ne permet pas d'altérer les journaux. Le 
 en lecture seule est créé automatiquement au premier démarrage par
 `db/20-dashboard-grant.sh`.
 
+## Sources de journaux
+
+Le système centralise plusieurs sources, toutes consultables dans le dashboard
+(sauf le slow query log, propre à MariaDB) :
+
+| Source             | Contenu                                                            | Destination                |
+|--------------------|-------------------------------------------------------------------|----------------------------|
+| Backend Resa       | Événements métier + `http_request` (4xx → warning, 5xx → error), sécurité (`failed_login`, `invalid_token`, `unauthorized_access`…) | rsyslog → `events` (dashboard) |
+| nginx (site public)| `http_access` : **tous** les accès au site, avec l'IP cliente réelle — rend visibles les scanners (`/.env`, `/wp-admin`, `/.git/config`…) | rsyslog → `events` (dashboard) |
+| MariaDB            | Slow query log (requêtes ≥ 1 s ou sans index)                     | `/var/lib/mysql/slow.log`  |
+
+- Les accès nginx sont émis au **format JSON** compatible avec la table `events`
+  (`docker/resa-frontend.Dockerfile`). rsyslog extrait par regex la portion JSON,
+  que le message soit brut (app) ou encadré syslog (nginx).
+- Consulter le slow query log :
+  ```bash
+  docker compose exec mariadb tail -f /var/lib/mysql/slow.log
+  ```
+
 ## Workflow git
 
 - `main` : versions stables (taguées).
