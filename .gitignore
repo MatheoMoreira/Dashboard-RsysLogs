@@ -1,1 +1,5 @@
 .DS_Store
+
+# Outil Composer téléchargé localement
+backend/composer.phar
+composer.phar
