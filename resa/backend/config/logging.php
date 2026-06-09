@@ -141,7 +141,11 @@ return [
         |
         | Local dev defaults to file only. To forward to rsyslog, set:
         |   LOG_EVENT_STACK=events_file,rsyslog
-        |   RSYSLOG_CONNECTION=udp://your-syslog-host:514
+        |   RSYSLOG_CONNECTION=tcp://your-syslog-host:514
+        |
+        | Prefer tcp:// over udp:// : reliable delivery (no silent loss). The
+        | events_file channel keeps a durable local copy, so a transient
+        | network issue never drops an event.
         |
         */
 

@@ -37,8 +37,12 @@ fi
 
 # 2. Active le forwarding des événements vers le conteneur rsyslog
 #    (le canal "rsyslog" existe déjà dans config/logging.php)
+#    Transport TCP : livraison fiable (accusé de réception, pas de perte
+#    silencieuse comme en UDP) — recommandation ANSSI sur la journalisation.
+#    Le canal "events_file" conserve en plus une copie locale durable, donc
+#    un incident réseau ne fait jamais perdre d'événement.
 sed -i 's#^LOG_EVENT_STACK=.*#LOG_EVENT_STACK=events_file,rsyslog#'      .env
-sed -i 's#^RSYSLOG_CONNECTION=.*#RSYSLOG_CONNECTION=udp://rsyslog:514#'  .env
+sed -i 's#^RSYSLOG_CONNECTION=.*#RSYSLOG_CONNECTION=tcp://rsyslog:514#'  .env
 
 # 3. Clé applicative (générée une seule fois, persistée via le volume .env)
 if ! grep -q '^APP_KEY=base64:' .env; then

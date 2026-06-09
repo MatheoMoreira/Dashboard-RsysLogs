@@ -11,7 +11,7 @@ visualiser dans un **dashboard PHP** (architecture **MVC**, programmation modula
 
 ```
 ┌────────────────┐   /api    ┌────────────────┐  logs JSON   ┌──────────┐  INSERT   ┌──────────┐
-│ resa-frontend  │ ────────▶ │  resa-backend  │ ───UDP:514─▶ │ rsyslog  │ ────────▶ │ mariadb  │
+│ resa-frontend  │ ────────▶ │  resa-backend  │ ───TCP:514─▶ │ rsyslog  │ ────────▶ │ mariadb  │
 │ (React/nginx)  │           │ (Laravel 8.4)  │              │ (ommysql)│           │  events  │
 └────────────────┘           └────────────────┘              └──────────┘           └────┬─────┘
                                                                                           │ SELECT
