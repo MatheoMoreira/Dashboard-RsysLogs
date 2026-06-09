@@ -62,18 +62,6 @@ export default function LoginPage() {
           Créer un compte
         </Link>
       </p>
-
-      <div className="mt-8 rounded-xl border border-ink-700 bg-ink-950 p-4">
-        <p className="label-mono mb-2">Comptes de démonstration</p>
-        <div className="space-y-1 text-xs text-fog-400">
-          <p>
-            <span className="font-semibold text-signal-300">admin@resa.test</span> · password
-          </p>
-          <p>
-            <span className="font-semibold text-signal-300">user@resa.test</span> · password
-          </p>
-        </div>
-      </div>
     </div>
   )
 }

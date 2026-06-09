@@ -56,8 +56,21 @@ docker compose up --build -d  # build + lancement des 5 services
 docker compose ps             # mariadb healthy, autres services up
 ```
 
-- **Application Resa** : <http://localhost:5173> — login `admin@resa.test` / `password`
+> **Chargement initial des données (une seule fois).** Le backend applique
+> uniquement les migrations au démarrage (comportement prod : pas de
+> réinitialisation ni de seed automatique, la base SQLite est persistée dans
+> un volume). Pour créer le compte administrateur et le catalogue de salles
+> lors de la première mise en route :
+>
+> ```bash
+> docker compose exec resa-backend php artisan db:seed --force
+> ```
+
+- **Application Resa** : <http://localhost:5173> — administrateur `admin@resa.test` / `password`
 - **Dashboard logs**   : <http://localhost:8080>
+
+> Aucun compte de démonstration n'est exposé : les utilisateurs s'inscrivent
+> via l'application. Seul l'administrateur est créé par le seed initial.
 
 ## Vérifier la chaîne de centralisation
 
