@@ -81,6 +81,21 @@ docker compose exec mariadb \
 | `mariadb`      | Base `rsyslog_dashboard`, table `events`                   | 3306  |
 | `dashboard`    | Dashboard PHP MVC (lecture des logs)                       | 8080  |
 
+## Sécurité — moindre privilège sur les journaux
+
+Deux comptes MariaDB distincts sont utilisés (séparation des rôles, recommandation
+ANSSI sur la protection de l'intégrité des journaux) :
+
+| Compte         | Droits                       | Utilisé par |
+|----------------|------------------------------|-------------|
+| `rsyslog`      | `INSERT` (écriture des logs) | `rsyslog`   |
+| `dashboard_ro` | `SELECT` (lecture seule)     | `dashboard` |
+
+Le dashboard ne peut **jamais** modifier ni supprimer un événement : une éventuelle
+faille de l'interface de consultation ne permet pas d'altérer les journaux. Le compte
+en lecture seule est créé automatiquement au premier démarrage par
+`db/20-dashboard-grant.sh`.
+
 ## Workflow git
 
 - `main` : versions stables (taguées).
