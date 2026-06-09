@@ -1,0 +1,16 @@
+# ─────────────────────────────────────────────────────────────
+# Journalisation MariaDB — slow query log
+#
+# Capture les requêtes lentes (≥ 1 s) ET les requêtes qui n'utilisent pas
+# d'index (souvent le signe d'une requête coûteuse ou d'un schéma à revoir).
+# Le fichier est écrit dans le répertoire de données (volume persistant).
+#
+# Consultation :
+#   docker compose exec mariadb tail -f /var/lib/mysql/slow.log
+# ─────────────────────────────────────────────────────────────
+[mariadbd]
+slow_query_log              = 1
+slow_query_log_file         = /var/lib/mysql/slow.log
+long_query_time             = 1
+log_queries_not_using_indexes = 1
+log_output                  = FILE

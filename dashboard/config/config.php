@@ -30,7 +30,7 @@ return [
         'Sécurité'         => ['unauthorized_access', 'invalid_token', 'forbidden_action'],
         'Métier'           => ['double_booking_attempt', 'room_capacity_exceeded', 'invalid_reservation_period'],
         'Système'          => ['database_error', 'unhandled_exception'],
-        'HTTP'             => ['http_request'],
+        'HTTP'             => ['http_request', 'http_access'],
     ],
 
     // Événements considérés comme sensibles (mis en avant dans le dashboard)
