@@ -14,7 +14,7 @@ function RankedList({ items }) {
     <ul className="divide-y divide-ink-700">
       {items.map((item, idx) => (
         <li key={idx} className="flex items-center gap-3 px-5 py-3">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ink-800 font-mono text-xs font-bold text-signal-300 ring-1 ring-ink-600">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-signal-400/10 text-xs font-bold text-signal-300 ring-1 ring-signal-400/20">
             {idx + 1}
           </span>
           <div className="min-w-0 flex-1">
@@ -26,7 +26,7 @@ function RankedList({ items }) {
               />
             </div>
           </div>
-          <span className="shrink-0 font-mono text-sm font-semibold text-fog-200 tabular-nums">{item.count}</span>
+          <span className="shrink-0 text-sm font-semibold text-fog-200 tabular-nums">{item.count}</span>
         </li>
       ))}
     </ul>
@@ -36,7 +36,7 @@ function RankedList({ items }) {
 export default function AdminDashboardPage() {
   const { data, loading, error } = useApi(() => statsApi.dashboard())
 
-  if (loading) return <PageLoader label="Agrégation des métriques…" />
+  if (loading) return <PageLoader label="Chargement des statistiques…" />
   if (error) return <EmptyState title="Erreur" description={error} />
 
   const { globals, reservations_per_day, top_rooms, top_users } = data
@@ -45,17 +45,17 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="admin · stats/dashboard"
-        title="Console d'observabilité"
+        eyebrow="Administration"
+        title="Tableau de bord"
         description="Vue d'ensemble de l'activité de réservation."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard label="total réservations" code="total" value={globals.total_reservations} accent="signal" delay={0.05} />
-        <StatCard label="aujourd'hui" code="today" value={globals.reservations_today} accent="ok" delay={0.1} />
-        <StatCard label="annulations" code="cancel" value={globals.cancelled_reservations} accent="alert" delay={0.15} />
-        <StatCard label="salles" code="rooms" value={globals.total_rooms} accent="warn" delay={0.2} />
-        <StatCard label="utilisateurs" code="users" value={globals.total_users} accent="fog" delay={0.25} />
+        <StatCard label="Total réservations" value={globals.total_reservations} accent="signal" delay={0.05} />
+        <StatCard label="Aujourd'hui" value={globals.reservations_today} accent="ok" delay={0.1} />
+        <StatCard label="Annulations" value={globals.cancelled_reservations} accent="alert" delay={0.15} />
+        <StatCard label="Salles" value={globals.total_rooms} accent="warn" delay={0.2} />
+        <StatCard label="Utilisateurs" value={globals.total_users} accent="fog" delay={0.25} />
       </div>
 
       <Card className="reveal mt-8">

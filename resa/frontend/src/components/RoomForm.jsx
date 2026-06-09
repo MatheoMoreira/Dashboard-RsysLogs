@@ -44,7 +44,7 @@ export default function RoomForm({ equipment = [], initialValues = {}, submitLab
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {error && (
         <div className="flex items-start gap-2 rounded-lg border border-alert-500/30 bg-alert-500/10 px-4 py-3 text-sm text-alert-400">
-          <span className="font-mono">!</span>
+          <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
           {error}
         </div>
       )}
@@ -79,9 +79,9 @@ export default function RoomForm({ equipment = [], initialValues = {}, submitLab
                   type="button"
                   key={eq.id}
                   onClick={() => toggleEquipment(eq.id)}
-                  className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium uppercase tracking-wider transition ${
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold tracking-wide transition ${
                     active
-                      ? 'bg-signal-400 text-ink-950'
+                      ? 'bg-signal-400 text-white'
                       : 'bg-ink-800 text-fog-400 ring-1 ring-inset ring-ink-600 hover:bg-ink-750 hover:text-fog-200'
                   }`}
                 >

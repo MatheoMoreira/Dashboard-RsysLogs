@@ -27,7 +27,7 @@ export default function AppLayout() {
       {/* Mobile sidebar */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-ink-950/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-0 bg-fog-50/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
           <div className="absolute inset-y-0 left-0 w-64">
             <Sidebar onNavigate={() => setMobileOpen(false)} />
           </div>
@@ -36,22 +36,24 @@ export default function AppLayout() {
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-700 bg-ink-950 px-4 py-3 sm:px-6">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-700 bg-ink-900/80 px-4 py-3 backdrop-blur sm:px-6">
           <button
-            className="rounded-lg p-2 font-mono text-fog-400 hover:bg-ink-800 lg:hidden"
+            className="rounded-lg p-2 text-fog-400 hover:bg-ink-800 lg:hidden"
             onClick={() => setMobileOpen(true)}
             aria-label="Ouvrir le menu"
           >
-            ≡
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
 
           <div className="ml-auto flex items-center gap-3 sm:gap-4">
-            <Badge variant={isAdmin ? 'signal' : 'neutral'}>{isAdmin ? 'admin' : 'user'}</Badge>
+            <Badge variant={isAdmin ? 'signal' : 'neutral'}>{isAdmin ? 'Admin' : 'Membre'}</Badge>
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-semibold text-fog-50">{user?.full_name}</p>
-              <p className="font-mono text-xs text-fog-500">{user?.email}</p>
+              <p className="text-sm font-semibold text-fog-100">{user?.full_name}</p>
+              <p className="text-xs text-fog-500">{user?.email}</p>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink-800 font-mono text-xs font-semibold text-signal-300 ring-1 ring-ink-600">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-signal-400/10 text-xs font-semibold text-signal-300 ring-1 ring-signal-400/20">
               {initials}
             </div>
             <Button variant="secondary" onClick={handleLogout}>
