@@ -33,6 +33,19 @@ final class EventModel
     }
 
     /**
+     * Nombre d'événements sur la tranche [48h ; 24h[ avant maintenant, pour
+     * comparer les dernières 24 h à la période équivalente précédente.
+     */
+    public function previous24h(): int
+    {
+        return (int) $this->db->query(
+            'SELECT COUNT(*) FROM events
+             WHERE received_at >= (NOW() - INTERVAL 48 HOUR)
+               AND received_at <  (NOW() - INTERVAL 24 HOUR)'
+        )->fetchColumn();
+    }
+
+    /**
      * Nombre d'événements par type d'événement.
      *
      * @return array<string, int>
@@ -64,6 +77,25 @@ final class EventModel
         $result = [];
         foreach ($rows as $row) {
             $result[$row['level'] ?? 'inconnu'] = (int) $row['n'];
+        }
+        return $result;
+    }
+
+    /**
+     * Nombre d'événements par canal applicatif (channel), colonne générée
+     * depuis le JSON mais jusqu'ici non exploitée par le dashboard.
+     *
+     * @return array<string, int>
+     */
+    public function countByChannel(): array
+    {
+        $rows = $this->db->query(
+            'SELECT channel, COUNT(*) AS n FROM events GROUP BY channel ORDER BY n DESC'
+        )->fetchAll();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[$row['channel'] ?? 'inconnu'] = (int) $row['n'];
         }
         return $result;
     }

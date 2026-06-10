@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
+use App\Models\DbStatsModel;
 use App\Models\EventModel;
 
 /**
@@ -40,14 +41,17 @@ final class DashboardController extends Controller
         $this->view('dashboard', [
             'total'        => $model->total(),
             'last24h'      => $model->totalSince('24 HOUR'),
+            'prev24h'      => $model->previous24h(),
             'securityHits' => $model->securityCount($security),
             'byCategory'   => $byCategory,
+            'byChannel'    => $model->countByChannel(),
             'byEvent'      => $countByEvent,
             'byLevel'      => $model->countByLevel(),
             'hourly'       => $model->hourlyLast24h(),
             'secBreakdown' => $model->securityBreakdown($security),
             'secTopIps'    => $model->topSecurityIps($security),
             'secRecent'    => $model->recentSecurity($security),
+            'dbStats'      => (new DbStatsModel())->overview(),
         ], 'Vue d\'ensemble');
     }
 

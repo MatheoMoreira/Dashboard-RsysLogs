@@ -219,6 +219,36 @@ h3 { font-size: 0.95rem; margin: 0 0 12px; }
 .card-alert .card-value { color: var(--alert-400); }
 .card-alert::after { background: var(--alert-500); }
 
+/* ------------------------------------------------------- Badge de tendance */
+.trend {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 0.7rem; font-weight: 600;
+    padding: 1px 7px; border-radius: 99px;
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+}
+.trend-up   { background: rgba(220, 38, 38, 0.10); color: var(--alert-400); }
+.trend-down { background: rgba(5, 150, 105, 0.12); color: var(--ok-400); }
+.trend-flat { background: var(--ink-800); color: var(--fog-500); }
+
+/* ------------------------------------------------------- Santé de la base */
+.db-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 24px; }
+.db-stat { display: flex; flex-direction: column; gap: 3px; }
+.db-label {
+    font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--fog-500);
+}
+.db-value {
+    font-family: var(--font-display);
+    font-size: 1.5rem; font-weight: 500; color: var(--fog-50);
+    font-variant-numeric: tabular-nums;
+}
+.db-value-sm { font-size: 1.05rem; }
+.db-value-ok { color: var(--ok-400); }
+.db-value-alert { color: var(--alert-400); }
+.db-sub { font-size: 0.75rem; color: var(--fog-500); }
+
 /* ------------------------------------------------------------------- Grilles */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
@@ -365,4 +395,4 @@ pre.json {
     .topbar { padding: 0 20px; }
     .container { padding: 20px; }
 }
-@media (max-width: 760px) { .grid-2, .grid-3, .cards { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .grid-2, .grid-3, .cards, .db-grid { grid-template-columns: 1fr; } }

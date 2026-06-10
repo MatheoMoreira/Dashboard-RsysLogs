@@ -2,16 +2,26 @@
 /**
  * @var int                $total
  * @var int                $last24h
+ * @var int                $prev24h
  * @var int                $securityHits
  * @var array<string,int>  $byCategory
+ * @var array<string,int>  $byChannel
  * @var array<string,int>  $byEvent
  * @var array<string,int>  $byLevel
  * @var array<string,int>  $hourly
  * @var array<string,int>  $secBreakdown
  * @var array<string,int>  $secTopIps
  * @var list<array<string,mixed>> $secRecent
+ * @var array<string,mixed> $dbStats
  */
 $maxHourly = $hourly ? max($hourly) : 0;
+
+// Tendance des dernières 24 h vs la période équivalente précédente.
+$delta = $prev24h > 0 ? (int) round(($last24h - $prev24h) / $prev24h * 100) : null;
+
+// Seuil au-delà duquel on considère le flux rsyslog comme interrompu (15 min).
+$stale = isset($dbStats['staleSeconds']) && $dbStats['staleSeconds'] !== null
+    && $dbStats['staleSeconds'] > 900;
 ?>
 <h1>Vue d'ensemble</h1>
 
@@ -22,11 +32,65 @@ $maxHourly = $hourly ? max($hourly) : 0;
     </div>
     <div class="card">
         <div class="card-value" data-stat="last24h"><?= number_format($last24h, 0, ',', ' ') ?></div>
-        <div class="card-label">Dernières 24 h</div>
+        <div class="card-label">
+            Dernières 24 h
+            <?php if ($delta !== null): ?>
+                <span class="trend trend-<?= $delta > 0 ? 'up' : ($delta < 0 ? 'down' : 'flat') ?>"
+                      title="vs 24 h précédentes (<?= number_format($prev24h, 0, ',', ' ') ?>)">
+                    <?= $delta > 0 ? '▲' : ($delta < 0 ? '▼' : '=') ?> <?= abs($delta) ?> %
+                </span>
+            <?php endif; ?>
+        </div>
     </div>
     <div class="card <?= $securityHits > 0 ? 'card-alert' : '' ?>" data-card="security">
         <div class="card-value" data-stat="securityHits"><?= number_format($securityHits, 0, ',', ' ') ?></div>
         <div class="card-label">Événements de sécurité</div>
+    </div>
+</section>
+
+<section class="panel <?= $stale ? 'panel-security' : '' ?>">
+    <h2>🗄️ Santé de la base</h2>
+    <div class="db-grid">
+        <div class="db-stat">
+            <span class="db-label">Flux rsyslog</span>
+            <span class="db-value <?= $stale ? 'db-value-alert' : 'db-value-ok' ?>">
+                <?= $stale ? 'Interrompu' : 'Actif' ?>
+            </span>
+            <span class="db-sub">
+                Dernier log : <?= fmt_dt($dbStats['lastReceived'] ?? null, 'd/m H:i:s') ?>
+                <?php if (($dbStats['staleSeconds'] ?? null) !== null): ?>
+                    (il y a <?= fmt_duration($dbStats['staleSeconds']) ?>)
+                <?php endif; ?>
+            </span>
+        </div>
+        <div class="db-stat">
+            <span class="db-label">Débit d'ingestion</span>
+            <span class="db-value"><?= $dbStats['ratePerHour'] !== null ? number_format($dbStats['ratePerHour'], 1, ',', ' ') : '—' ?></span>
+            <span class="db-sub">événements / heure (24 h)</span>
+        </div>
+        <div class="db-stat">
+            <span class="db-label">Taille des journaux</span>
+            <span class="db-value"><?= fmt_bytes($dbStats['totalLength'] ?? null) ?></span>
+            <span class="db-sub">
+                données <?= fmt_bytes($dbStats['dataLength'] ?? null) ?>
+                · index <?= fmt_bytes($dbStats['indexLength'] ?? null) ?>
+            </span>
+        </div>
+        <div class="db-stat">
+            <span class="db-label">Profondeur d'historique</span>
+            <span class="db-value"><?= ($dbStats['spanHours'] ?? null) !== null ? fmt_duration((int) round($dbStats['spanHours'] * 3600)) : '—' ?></span>
+            <span class="db-sub">depuis le <?= fmt_dt($dbStats['firstReceived'] ?? null, 'd/m/Y') ?></span>
+        </div>
+        <div class="db-stat">
+            <span class="db-label">Serveur</span>
+            <span class="db-value db-value-sm"><?= e($dbStats['version'] ?? '—') ?></span>
+            <span class="db-sub">uptime <?= fmt_duration($dbStats['uptime'] ?? null) ?></span>
+        </div>
+        <div class="db-stat">
+            <span class="db-label">Connexions actives</span>
+            <span class="db-value"><?= ($dbStats['threads'] ?? null) !== null ? (int) $dbStats['threads'] : '—' ?></span>
+            <span class="db-sub">requêtes lentes : <?= ($dbStats['slowQueries'] ?? null) !== null ? number_format($dbStats['slowQueries'], 0, ',', ' ') : '—' ?></span>
+        </div>
     </div>
 </section>
 
@@ -119,6 +183,24 @@ $maxHourly = $hourly ? max($hourly) : 0;
         </table>
     </section>
 </div>
+
+<?php if ($byChannel !== []): ?>
+<section class="panel">
+    <h2>Par canal applicatif</h2>
+    <table class="bars">
+        <?php $maxChan = max($byChannel); ?>
+        <?php foreach ($byChannel as $channel => $count): ?>
+            <tr>
+                <th><?= e($channel) ?></th>
+                <td class="bar-cell">
+                    <span class="bar" style="width: <?= $maxChan ? round($count / $maxChan * 100) : 0 ?>%"></span>
+                </td>
+                <td class="bar-num"><?= $count ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+</section>
+<?php endif; ?>
 
 <section class="panel">
     <h2>Activité des dernières 24 h</h2>

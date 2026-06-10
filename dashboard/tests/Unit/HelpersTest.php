@@ -68,4 +68,33 @@ final class HelpersTest extends TestCase
         // Une valeur non parsable est renvoyée échappée, sans lever d'exception.
         self::assertSame('&lt;bad&gt;', fmt_dt('<bad>'));
     }
+
+    public function testFmtBytesRetourneTiretSurNull(): void
+    {
+        self::assertSame('—', fmt_bytes(null));
+    }
+
+    public function testFmtBytesFormateLesEchellesBinaires(): void
+    {
+        self::assertSame('0 o', fmt_bytes(0));
+        self::assertSame('512 o', fmt_bytes(512));
+        self::assertSame('1,0 Ko', fmt_bytes(1024));
+        self::assertSame('1,5 Ko', fmt_bytes(1536));
+        self::assertSame('1,0 Mo', fmt_bytes(1024 * 1024));
+        self::assertSame('2,0 Go', fmt_bytes(2 * 1024 * 1024 * 1024));
+    }
+
+    public function testFmtDurationRetourneTiretSurNull(): void
+    {
+        self::assertSame('—', fmt_duration(null));
+    }
+
+    public function testFmtDurationFormateLesDurees(): void
+    {
+        self::assertSame('45 s', fmt_duration(45));
+        self::assertSame('2 min', fmt_duration(120));
+        self::assertSame('1 h 30 min', fmt_duration(5400));
+        // Au-delà du jour, on omet les minutes pour rester lisible (uptime).
+        self::assertSame('1 j 1 h', fmt_duration(90000));
+    }
 }
