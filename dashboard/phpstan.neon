@@ -1,0 +1,14 @@
+parameters:
+    level: 6
+    paths:
+        - src
+        - public
+    # Les fonctions globales e() / fmt_dt() vivent dans src/helpers.php,
+    # chargé pour l'analyse afin que les vues les connaissent.
+    scanFiles:
+        - src/helpers.php
+    # Les templates de vues reçoivent leurs variables via extract($data) ;
+    # ce motif n'est pas analysable statiquement et est donc exclu.
+    excludePaths:
+        - src/Views/*
+    treatPhpDocTypesAsCertain: false

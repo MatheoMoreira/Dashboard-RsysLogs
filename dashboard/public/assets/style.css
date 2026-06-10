@@ -219,6 +219,62 @@ h3 { font-size: 0.95rem; margin: 0 0 12px; }
 .card-alert .card-value { color: var(--alert-400); }
 .card-alert::after { background: var(--alert-500); }
 
+/* Grille de KPIs (s'adapte de 1 à 5 colonnes selon la largeur) */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpis .card-value { font-size: 2rem; }
+.card-foot { margin-top: 10px; font-size: 0.75rem; color: var(--fog-500); }
+.card-human .card-value { color: var(--ok-400); }
+.card-human::after { background: var(--ok-400); }
+.card-bot { border-color: rgba(217, 119, 6, 0.4); }
+.card-bot .card-value { color: var(--warn-400); }
+.card-bot::after { background: var(--warn-400); }
+
+/* Barre empilée humain / bot */
+.split-bar {
+    display: flex; height: 14px; border-radius: 99px; overflow: hidden;
+    background: var(--ink-800); margin: 4px 0 12px;
+}
+.split-seg { height: 100%; transition: width .5s cubic-bezier(0.22, 1, 0.36, 1); }
+.split-human { background: var(--ok-400); }
+.split-bot { background: var(--warn-400); }
+.split-legend { display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.8rem; color: var(--fog-400); margin-bottom: 8px; }
+.split-legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 99px; margin-right: 5px; vertical-align: baseline; }
+.dot-human { background: var(--ok-400); }
+.dot-bot { background: var(--warn-400); }
+
+.bar-warn { background: linear-gradient(90deg, var(--warn-400), #f59e0b); }
+.ua-cell { max-width: 240px; overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.78rem; color: var(--fog-400); }
+
+/* ------------------------------------------------------- Badge de tendance */
+.trend {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 0.7rem; font-weight: 600;
+    padding: 1px 7px; border-radius: 99px;
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+}
+.trend-up   { background: rgba(220, 38, 38, 0.10); color: var(--alert-400); }
+.trend-down { background: rgba(5, 150, 105, 0.12); color: var(--ok-400); }
+.trend-flat { background: var(--ink-800); color: var(--fog-500); }
+
+/* ------------------------------------------------------- Santé de la base */
+.db-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 24px; }
+.db-stat { display: flex; flex-direction: column; gap: 3px; }
+.db-label {
+    font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--fog-500);
+}
+.db-value {
+    font-family: var(--font-display);
+    font-size: 1.5rem; font-weight: 500; color: var(--fog-50);
+    font-variant-numeric: tabular-nums;
+}
+.db-value-sm { font-size: 1.05rem; }
+.db-value-ok { color: var(--ok-400); }
+.db-value-alert { color: var(--alert-400); }
+.db-sub { font-size: 0.75rem; color: var(--fog-500); }
+
 /* ------------------------------------------------------------------- Grilles */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
@@ -231,9 +287,32 @@ h3 { font-size: 0.95rem; margin: 0 0 12px; }
 
 .sec-feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .sec-feed li { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.sec-feed li[hidden] { display: none; }
 .sec-feed a { color: var(--signal-300); text-decoration: none; font-weight: 500; }
 .sec-feed a:hover { color: var(--signal-400); }
 .sec-feed .muted { margin-left: auto; font-size: 0.75rem; }
+.sec-feed li.is-ack { opacity: 0.55; }
+
+/* En-tête du feed + bascule « alertes lues » */
+.sec-feed-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ack-toggle {
+    font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600;
+    color: var(--fog-400); background: none; border: 0; cursor: pointer;
+    padding: 0; text-decoration: underline; text-underline-offset: 2px;
+}
+.ack-toggle:hover { color: var(--signal-300); }
+.sec-feed-empty { font-size: 0.8rem; margin: 4px 0 0; }
+
+/* Bouton « marquer comme lu » par alerte */
+.ack-btn {
+    flex-shrink: 0; width: 20px; height: 20px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: var(--fog-500);
+    background: var(--ink-800); border: 1px solid var(--ink-600);
+    border-radius: 6px; cursor: pointer; transition: background .12s, color .12s;
+}
+.ack-btn:hover { background: var(--ok-400); color: #fff; border-color: var(--ok-400); }
+.sec-feed li.is-ack .ack-btn { background: var(--ok-400); color: #fff; border-color: var(--ok-400); }
 
 /* ---------------------------------------------------------- Barres horizontales */
 table.bars { width: 100%; border-collapse: collapse; }
@@ -256,6 +335,21 @@ table.bars td.bar-cell { width: 100%; }
 }
 .tl-col:hover .tl-bar { background: var(--signal-600); }
 .tl-label { font-size: 0.6rem; color: var(--fog-500); margin-top: 4px; }
+
+/* Barre empilée humain (bas) / bot (haut) */
+.tl-stack {
+    width: 100%; display: flex; flex-direction: column; justify-content: flex-end;
+    min-height: 2px; border-radius: 4px 4px 0 0; overflow: hidden;
+    transform-origin: bottom; animation: grow-bar .5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tl-seg { width: 100%; }
+.tl-seg.tl-human { background: var(--ok-400); }
+.tl-seg.tl-bot { background: var(--warn-400); }
+.tl-col:hover .tl-seg.tl-human { background: #047857; }
+.tl-col:hover .tl-seg.tl-bot { background: #b45309; }
+
+/* Grille 2 colonnes un peu plus aérée (sections trafic) */
+.grid-2-wide { gap: 28px; margin-top: 8px; }
 
 /* ------------------------------------------------------------- Niveaux (badges) */
 .level {
@@ -319,6 +413,13 @@ table.events tbody tr { transition: background .12s; }
 table.events tbody tr:hover td { background: var(--ink-800); }
 table.events code, code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.82rem; color: var(--signal-300); }
 .path { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fog-400); }
+.badge-bot {
+    display: inline-block; margin-left: 6px;
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 0.02em;
+    padding: 1px 7px; border-radius: 99px;
+    background: rgba(217, 119, 6, 0.10); color: var(--warn-400);
+    border: 1px solid rgba(217, 119, 6, 0.25); vertical-align: middle;
+}
 .link { color: var(--signal-300); text-decoration: none; font-weight: 500; }
 .link:hover { color: var(--signal-400); text-decoration: underline; }
 
@@ -365,4 +466,4 @@ pre.json {
     .topbar { padding: 0 20px; }
     .container { padding: 20px; }
 }
-@media (max-width: 760px) { .grid-2, .grid-3, .cards { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .grid-2, .grid-3, .cards, .db-grid { grid-template-columns: 1fr; } }

@@ -23,10 +23,25 @@ CREATE TABLE IF NOT EXISTS events (
     ip           VARCHAR(45)  GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.ip')),        'null')) STORED,
     method       VARCHAR(8)   GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.method')),    'null')) STORED,
     path         VARCHAR(255) GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.path')),      'null')) STORED,
+    user_agent   VARCHAR(255) GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.user_agent')),'null')) STORED,
     event_time   VARCHAR(40)  GENERATED ALWAYS AS (NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.timestamp')), 'null')) STORED,
+
+    -- Classification automatique « bot/scan » : un scanner_probe (sonde
+    -- bloquée par nginx) est toujours un bot ; sinon on s'appuie sur le
+    -- user_agent (outils, crawlers, bibliothèques HTTP). Colonne STORED :
+    -- calculée une fois à l'insertion, indexée pour les KPIs trafic.
+    is_bot       TINYINT(1)   GENERATED ALWAYS AS (
+        CASE
+            WHEN NULLIF(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.event')), 'null') = 'scanner_probe' THEN 1
+            WHEN LOWER(COALESCE(JSON_UNQUOTE(JSON_EXTRACT(raw_json, '$.user_agent')), '')) REGEXP
+                 'bot|crawl|spider|slurp|curl|wget|python|http.?client|scan|nikto|sqlmap|nmap|masscan|zgrab|go-http|java/|libwww|okhttp|headless|phantomjs|semrush|ahrefs|mj12|dotbot|bingpreview|facebookexternalhit' THEN 1
+            ELSE 0
+        END
+    ) STORED,
 
     KEY idx_event       (event),
     KEY idx_level       (level),
     KEY idx_user        (user_id),
-    KEY idx_received_at (received_at)
+    KEY idx_received_at (received_at),
+    KEY idx_is_bot      (is_bot)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
