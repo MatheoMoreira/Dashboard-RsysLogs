@@ -10,16 +10,21 @@ visualiser dans un **dashboard PHP** (architecture **MVC**, programmation modula
 ## Architecture
 
 ```
-┌────────────────┐   /api    ┌────────────────┐  logs JSON   ┌──────────┐  INSERT   ┌──────────┐
-│ resa-frontend  │ ────────▶ │  resa-backend  │ ───TCP:514─▶ │ rsyslog  │ ────────▶ │ mariadb  │
-│ (React/nginx)  │           │ (Laravel 8.4)  │              │ (ommysql)│           │  events  │
-└────────────────┘           └────────────────┘              └──────────┘           └────┬─────┘
-                                                                                          │ SELECT
-                                                                                    ┌─────▼──────┐
-                                                                                    │ dashboard  │
-                                                                                    │ (PHP MVC)  │
-                                                                                    └────────────┘
+              HTTPS                /api    ┌────────────────┐  logs JSON   ┌──────────┐  INSERT   ┌──────────┐
+ client ──▶ ┌───────┐  ┌────────────────┐ ────────▶ │  resa-backend  │ ───TCP:514─▶ │ rsyslog  │ ────────▶ │ mariadb  │
+            │ Caddy │─▶│ resa-frontend  │           │ (Laravel 8.4)  │              │ (ommysql)│           │  events  │
+            │ (TLS) │  │ (React/nginx)  │           └────────────────┘              └──────────┘           └────┬─────┘
+            └───────┘  └────────────────┘                                                                      │ SELECT
+                                                                                                         ┌─────▼──────┐
+                                                                                                         │ dashboard  │
+                                                                                                         │ (PHP MVC)  │
+                                                                                                         └────────────┘
 ```
+
+> Caddy (reverse-proxy) est le point d'entrée public : il termine le **TLS**
+> (Let's Encrypt) et relaie en HTTP interne vers nginx. nginx restaure l'IP cliente
+> réelle (`real_ip`), bloque les sondes de scanners (403 → `scanner_probe`) et
+> journalise tous les accès.
 
 ## Structure du dépôt
 
@@ -36,7 +41,9 @@ visualiser dans un **dashboard PHP** (architecture **MVC**, programmation modula
 │   └── src/Views/     Vues (vue d'ensemble, liste, détail)
 ├── docker/            Dockerfiles (resa-backend, resa-frontend, rsyslog)
 ├── db/                init.sql (schéma de la table events)
-├── docker-compose.yml Orchestration des 5 services
+├── docker/caddy/      Caddyfile (reverse-proxy + TLS automatique)
+├── db/migrations/     Migrations SQL à appliquer aux bases déjà initialisées
+├── docker-compose.yml Orchestration des 6 services
 └── .env.example       Modèle de configuration (copier en .env)
 ```
 
@@ -51,10 +58,16 @@ visualiser dans un **dashboard PHP** (architecture **MVC**, programmation modula
 ## Démarrage
 
 ```bash
-cp .env.example .env          # configuration (identifiants DB, ports)
-docker compose up --build -d  # build + lancement des 5 services
+cp .env.example .env          # configuration (identifiants DB, ports, domaine HTTPS)
+docker compose up --build -d  # build + lancement des 6 services
 docker compose ps             # mariadb healthy, autres services up
 ```
+
+> **HTTPS (production).** Le frontend est servi derrière **Caddy**, qui obtient et
+> renouvelle automatiquement un certificat **Let's Encrypt**. Renseigne dans `.env` :
+> `RESA_DOMAIN` (domaine public pointant vers le serveur) et `ACME_EMAIL` (facultatif).
+> Les ports 80 et 443 doivent être joignables depuis Internet. En local, on accède via
+> le domaine configuré (certificat auto valable pour ce nom).
 
 > **Chargement initial des données (une seule fois).** Le backend applique
 > uniquement les migrations au démarrage (comportement prod : pas de
@@ -66,7 +79,17 @@ docker compose ps             # mariadb healthy, autres services up
 > docker compose exec resa-backend php artisan db:seed --force
 > ```
 
-- **Application Resa** : <http://localhost> — administrateur `admin@resa.test` / `password`
+> **Migration de classification bot (base déjà initialisée).** Le schéma `init.sql`
+> n'est appliqué qu'à la création de la base. Sur une base existante, ajoute les
+> colonnes `user_agent`/`is_bot` (le trafic humain/bot du dashboard) avec :
+>
+> ```bash
+> docker compose exec -T mariadb sh -c \
+>   'exec mariadb -uroot -p"$MARIADB_ROOT_PASSWORD" "$MARIADB_DATABASE"' \
+>   < db/migrations/2026-06-10-bot-classification.sql
+> ```
+
+- **Application Resa** : `https://<RESA_DOMAIN>` (HTTP redirige vers HTTPS) — administrateur `admin@resa.test` / `password`
 - **Dashboard logs**   : <http://localhost:8080>
 
 > Aucun compte de démonstration n'est exposé : les utilisateurs s'inscrivent
@@ -88,7 +111,8 @@ docker compose exec mariadb \
 
 | Service        | Rôle                                                       | Port  |
 |----------------|------------------------------------------------------------|-------|
-| `resa-frontend`| SPA React servie par nginx (proxy `/api`)                  | 80    |
+| `caddy`        | Reverse-proxy public + TLS automatique (Let's Encrypt)     | 80, 443 |
+| `resa-frontend`| SPA React servie par nginx (proxy `/api`, blocage des scans) — interne | — |
 | `resa-backend` | API Laravel ; forward des événements JSON vers rsyslog     | 8000  |
 | `rsyslog`      | Réception UDP/TCP 514 → insertion MariaDB (`ommysql`)      | —     |
 | `mariadb`      | Base `rsyslog_dashboard`, table `events`                   | 3306  |
@@ -117,7 +141,7 @@ Le système centralise plusieurs sources, toutes consultables dans le dashboard
 | Source             | Contenu                                                            | Destination                |
 |--------------------|-------------------------------------------------------------------|----------------------------|
 | Backend Resa       | Événements métier + `http_request` (4xx → warning, 5xx → error), sécurité (`failed_login`, `invalid_token`, `unauthorized_access`…) | rsyslog → `events` (dashboard) |
-| nginx (site public)| `http_access` : **tous** les accès au site, avec l'IP cliente réelle — rend visibles les scanners (`/.env`, `/wp-admin`, `/.git/config`…) | rsyslog → `events` (dashboard) |
+| nginx (site public)| `http_access` (tous les accès, IP cliente réelle) et `scanner_probe` (sondes bloquées en 403 : `/.env`, `/wp-admin`, `/.git/config`…). Trafic classé **humain/bot** (`is_bot`). | rsyslog → `events` (dashboard) |
 | MariaDB            | Slow query log (requêtes ≥ 1 s ou sans index)                     | `/var/lib/mysql/slow.log`  |
 
 - Les accès nginx sont émis au **format JSON** compatible avec la table `events`
