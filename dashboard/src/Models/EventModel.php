@@ -289,7 +289,7 @@ final class EventModel
      */
     public function paginate(array $filters, int $page, int $perPage): array
     {
-        [$where, $params] = $this->buildWhere($filters);
+        [$where, $params] = self::buildWhere($filters);
 
         $countStmt = $this->db->prepare("SELECT COUNT(*) FROM events {$where}");
         $countStmt->execute($params);
@@ -335,10 +335,13 @@ final class EventModel
     /**
      * Construit la clause WHERE à partir des filtres fournis.
      *
+     * Méthode pure (sans accès base) : statique pour être testable unitairement
+     * sans connexion MariaDB.
+     *
      * @param array<string,string> $filters
      * @return array{0: string, 1: array<int, mixed>}
      */
-    private function buildWhere(array $filters): array
+    public static function buildWhere(array $filters): array
     {
         $conditions = [];
         $params = [];
