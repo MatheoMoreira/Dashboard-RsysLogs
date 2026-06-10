@@ -261,9 +261,32 @@ h3 { font-size: 0.95rem; margin: 0 0 12px; }
 
 .sec-feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .sec-feed li { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.sec-feed li[hidden] { display: none; }
 .sec-feed a { color: var(--signal-300); text-decoration: none; font-weight: 500; }
 .sec-feed a:hover { color: var(--signal-400); }
 .sec-feed .muted { margin-left: auto; font-size: 0.75rem; }
+.sec-feed li.is-ack { opacity: 0.55; }
+
+/* En-tête du feed + bascule « alertes lues » */
+.sec-feed-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ack-toggle {
+    font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600;
+    color: var(--fog-400); background: none; border: 0; cursor: pointer;
+    padding: 0; text-decoration: underline; text-underline-offset: 2px;
+}
+.ack-toggle:hover { color: var(--signal-300); }
+.sec-feed-empty { font-size: 0.8rem; margin: 4px 0 0; }
+
+/* Bouton « marquer comme lu » par alerte */
+.ack-btn {
+    flex-shrink: 0; width: 20px; height: 20px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: var(--fog-500);
+    background: var(--ink-800); border: 1px solid var(--ink-600);
+    border-radius: 6px; cursor: pointer; transition: background .12s, color .12s;
+}
+.ack-btn:hover { background: var(--ok-400); color: #fff; border-color: var(--ok-400); }
+.sec-feed li.is-ack .ack-btn { background: var(--ok-400); color: #fff; border-color: var(--ok-400); }
 
 /* ---------------------------------------------------------- Barres horizontales */
 table.bars { width: 100%; border-collapse: collapse; }

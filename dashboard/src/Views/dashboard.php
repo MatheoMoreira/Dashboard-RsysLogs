@@ -135,16 +135,24 @@ $stale = isset($dbStats['staleSeconds']) && $dbStats['staleSeconds'] !== null
                 <?php endif; ?>
             </div>
             <div>
-                <h3>Derniers événements sensibles</h3>
-                <ul class="sec-feed">
+                <div class="sec-feed-head">
+                    <h3>Derniers événements sensibles</h3>
+                    <button type="button" class="ack-toggle" data-ack-toggle hidden>
+                        Voir les alertes lues (<span data-ack-count>0</span>)
+                    </button>
+                </div>
+                <ul class="sec-feed" data-sec-feed>
                     <?php foreach ($secRecent as $row): ?>
-                        <li>
+                        <li data-alert-id="<?= (int) $row['id'] ?>">
                             <span class="level level-<?= e($row['level']) ?>"><?= e($row['level']) ?></span>
                             <a href="/events/show?id=<?= (int) $row['id'] ?>"><?= e($row['event']) ?></a>
                             <span class="muted nowrap"><?= e($row['ip'] ?? '—') ?> · <?= fmt_dt($row['received_at'], 'H:i') ?></span>
+                            <button type="button" class="ack-btn" data-ack="<?= (int) $row['id'] ?>"
+                                    title="Marquer comme lu (reste consultable, masqué de la liste)">✓</button>
                         </li>
                     <?php endforeach; ?>
                 </ul>
+                <p class="muted sec-feed-empty" data-ack-empty hidden>Aucune alerte non lue. 👍</p>
             </div>
         </div>
     <?php endif; ?>
@@ -261,5 +269,67 @@ $stale = isset($dbStats['staleSeconds']) && $dbStats['staleSeconds'] !== null
             .catch(function () { /* repli silencieux : on retentera au prochain tick */ });
     }
     setInterval(poll, 15000);
+})();
+
+// Acquittement des alertes sensibles (« lu »).
+// Le compte BDD étant en lecture seule, l'état est conservé côté navigateur
+// (localStorage) : l'alerte n'est jamais supprimée de la base, seulement
+// masquée de cette liste. Un bouton permet de réafficher les alertes lues.
+(function () {
+    'use strict';
+    var KEY = 'resa_ack_alerts';
+    var feed = document.querySelector('[data-sec-feed]');
+    if (!feed) { return; }
+
+    var toggle = document.querySelector('[data-ack-toggle]');
+    var countEl = document.querySelector('[data-ack-count]');
+    var emptyEl = document.querySelector('[data-ack-empty]');
+    var showRead = false;
+
+    function load() {
+        try { return JSON.parse(localStorage.getItem(KEY)) || []; }
+        catch (e) { return []; }
+    }
+    function save(ids) {
+        try { localStorage.setItem(KEY, JSON.stringify(ids)); } catch (e) { /* quota/private */ }
+    }
+
+    function render() {
+        var acked = load();
+        var items = feed.querySelectorAll('li[data-alert-id]');
+        var hidden = 0, visible = 0;
+        items.forEach(function (li) {
+            var id = li.getAttribute('data-alert-id');
+            var isAck = acked.indexOf(id) !== -1;
+            li.classList.toggle('is-ack', isAck);
+            // Masquée si lue, sauf quand l'utilisateur demande à les revoir.
+            var show = !isAck || showRead;
+            li.hidden = !show;
+            if (isAck) { hidden++; } else { visible++; }
+        });
+        if (countEl) { countEl.textContent = String(hidden); }
+        if (toggle) {
+            toggle.hidden = hidden === 0;
+            toggle.firstChild.textContent = showRead ? 'Masquer les alertes lues (' : 'Voir les alertes lues (';
+        }
+        if (emptyEl) { emptyEl.hidden = !(visible === 0 && !showRead); }
+    }
+
+    feed.addEventListener('click', function (ev) {
+        var btn = ev.target.closest('[data-ack]');
+        if (!btn) { return; }
+        var id = btn.getAttribute('data-ack');
+        var acked = load();
+        var i = acked.indexOf(id);
+        if (i === -1) { acked.push(id); } else { acked.splice(i, 1); } // re-clic = annuler
+        save(acked);
+        render();
+    });
+
+    if (toggle) {
+        toggle.addEventListener('click', function () { showRead = !showRead; render(); });
+    }
+
+    render();
 })();
 </script>
