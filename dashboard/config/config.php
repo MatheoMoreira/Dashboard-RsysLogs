@@ -27,7 +27,7 @@ return [
         'Authentification' => ['user_registered', 'user_login', 'user_logout', 'failed_login'],
         'Consultation'     => ['rooms_list_viewed', 'room_viewed'],
         'Réservations'     => ['reservation_created', 'reservation_updated', 'reservation_cancelled'],
-        'Sécurité'         => ['unauthorized_access', 'invalid_token', 'forbidden_action'],
+        'Sécurité'         => ['unauthorized_access', 'invalid_token', 'forbidden_action', 'scanner_probe'],
         'Métier'           => ['double_booking_attempt', 'room_capacity_exceeded', 'invalid_reservation_period'],
         'Système'          => ['database_error', 'unhandled_exception'],
         'HTTP'             => ['http_request', 'http_access'],
@@ -37,5 +37,7 @@ return [
     'security_events' => [
         'failed_login', 'unauthorized_access', 'invalid_token',
         'forbidden_action', 'database_error', 'unhandled_exception',
+        // Sondes de scanners/bots bloquées par nginx (403) au niveau du frontend.
+        'scanner_probe',
     ],
 ];

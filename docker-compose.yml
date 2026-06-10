@@ -62,16 +62,36 @@ services:
     depends_on:
       - rsyslog
 
-  # 4) Application Resa — frontend React (servi par nginx)
+  # 4) Application Resa — frontend React (servi par nginx, HTTP interne).
+  # Plus d'exposition directe sur l'hôte : le trafic public passe par Caddy.
   resa-frontend:
     build:
       context: ./resa/frontend
       dockerfile: ../../docker/resa-frontend.Dockerfile
     restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT}:80"
+    expose:
+      - "80"
     depends_on:
       - resa-backend
+
+  # 4 bis) Reverse-proxy Caddy — point d'entrée public + TLS automatique
+  # (Let's Encrypt). Relaie en HTTP interne vers resa-frontend.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3 (QUIC)
+    environment:
+      RESA_DOMAIN: ${RESA_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data      # certificats Let's Encrypt (persistés !)
+      - caddy_config:/config
+    depends_on:
+      - resa-frontend
 
   # 5) Dashboard PHP (MVC maison) — visualise les logs centralisés
   dashboard:
@@ -96,3 +116,5 @@ services:
 volumes:
   mariadb_data:
   resa_backend_data:
+  caddy_data:
+  caddy_config:
