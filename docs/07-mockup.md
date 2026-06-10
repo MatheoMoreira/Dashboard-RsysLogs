@@ -6,39 +6,49 @@ journalisation**. Elles décrivent la disposition cible ; l'implémentation rée
 
 ## M-01 — Vue d'ensemble (`/`)
 
+Disposition cible après refonte : bandeau de **KPIs** (dont le trafic humain/bot),
+puis sections **Trafic**, **Sécurité**, **Santé de la base** et **répartitions**.
+
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  Dashboard rsyslog            [ Vue d'ensemble ] [ Événements ]│
-├──────────────────────────────────────────────────────────────┤
-│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐      │
-│  │  Total    │ │  24 h      │ │ Sécurité  │ │  Erreurs  │      │
-│  │  12 480   │ │   312      │ │    47     │ │    9      │      │
-│  └───────────┘ └───────────┘ └───────────┘ └───────────┘      │
-│                                                                │
-│  Répartition par type            Répartition par niveau        │
-│  ┌──────────────────────────┐    ┌──────────────────────────┐ │
-│  │ http_access     ▇▇▇▇▇ 60% │    │ info     ▇▇▇▇▇▇▇▇ 82 %    │ │
-│  │ user_login      ▇▇    18% │    │ warning  ▇▇       13 %    │ │
-│  │ failed_login    ▇      7% │    │ error    ▇         5 %    │ │
-│  │ reservation_*   ▇      …  │    │                          │ │
-│  └──────────────────────────┘    └──────────────────────────┘ │
-└──────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────┐
+│  Resa · Supervision        [ Vue d'ensemble ] [ Événements ]  ● live │
+├────────────────────────────────────────────────────────────────────┤
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌──────────┐ ┌──────────┐       │
+│  │ Événem. │ │Requêtes │ │ Humain  │ │🤖 Bots & │ │ Sécurité │       │
+│  │ 12 480  │ │  web    │ │  6 120  │ │  scans   │ │   47     │       │
+│  │ 24h:312 │ │  6 380  │ │  96 %   │ │ 260 · 4% │ │          │       │
+│  │  ▲ 8 %  │ │         │ │         │ │ 18 bloq. │ │          │       │
+│  └─────────┘ └─────────┘ └─────────┘ └──────────┘ └──────────┘       │
+│                                                                      │
+│  Trafic web — humain vs bot                                          │
+│  [██████████████████████████████████░░] 96 % humain · 4 % bot        │
+│  ┌── Activité 24h (empilée) ──┐  ┌── Top user-agents bots ────────┐  │
+│  │ ▁▂▃▅▇▅▃▂ (humain/bot)      │  │ curl/8.0        ▇▇▇▇▇  120       │  │
+│  └────────────────────────────┘  │ python-requests ▇▇     48        │  │
+│                                   └─────────────────────────────────┘ │
+│                                                                      │
+│  🔒 Sécurité   │ 🗄️ Santé base │  Par catégorie / niveau / canal      │
+│  scanner_probe │ flux: Actif   │  http_access ▇▇▇▇▇ · info ▇▇▇▇▇      │
+│  failed_login  │ 6,2 Mo · 24/h │  …                                   │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
 ## M-02 — Liste des événements (`/events`)
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  Événements                                   [ ‹ ] page 1 [ › ]│
-├───────────────┬───────────────┬───────┬────────┬──────────────┤
-│ Horodatage    │ Événement     │ Niveau│ User   │ IP           │
-├───────────────┼───────────────┼───────┼────────┼──────────────┤
-│ 09/06 08:52:50│ user_login    │ info  │ 1      │ 172.18.0.4   │ ▶
-│ 09/06 08:52:31│ failed_login  │ warn  │ —      │ 172.18.0.4   │ ▶
-│ 09/06 08:51:07│ http_access   │ warn  │ —      │ 203.0.113.7  │ ▶  (/.env)
-│ …             │ …             │ …     │ …      │ …            │
-└───────────────┴───────────────┴───────┴────────┴──────────────┘
-        (clic sur une ligne → fiche détail)
+┌──────────────────────────────────────────────────────────────────────┐
+│  Événements (646)                                   [ ‹ ] page 1 [ › ] │
+│  Filtres : Type ▾  Niveau ▾  Trafic [tous|👤humain|🤖bot] ▾  Dates …    │
+├───────────────┬──────────────────────┬───────┬──────┬───────────────┤
+│ Horodatage    │ Événement            │ Niveau│ User │ IP            │
+├───────────────┼──────────────────────┼───────┼──────┼───────────────┤
+│ 10/06 11:09:57│ user_login           │ info  │ 1    │ 86.x.x.x      │ ▶
+│ 10/06 11:08:31│ failed_login         │ warn  │ —    │ 86.x.x.x      │ ▶
+│ 10/06 11:07:02│ scanner_probe 🤖 bot │ warn  │ —    │ 45.x.x.x      │ ▶ (/.env)
+│ 10/06 11:06:50│ http_access  🤖 bot  │ info  │ —    │ 45.x.x.x      │ ▶
+│ …             │ …                    │ …     │ …    │ …             │
+└───────────────┴──────────────────────┴───────┴──────┴───────────────┘
+        (badge 🤖 bot = trafic automatisé ; clic sur une ligne → détail)
 ```
 
 ## M-03 — Détail d'un événement (`/events/show`)
@@ -50,7 +60,7 @@ journalisation**. Elles décrivent la disposition cible ; l'implémentation rée
 │  Événement : failed_login                      Niveau : warning│
 │  Reçu le   : 09/06/2026 08:52:31                               │
 │  Utilisateur : —          IP : 172.18.0.4     Méthode : POST   │
-│  Chemin    : /api/auth/login                                   │
+│  Chemin    : /api/auth/login              Trafic : 👤 humain   │
 │                                                                │
 │  JSON brut                                                     │
 │  ┌──────────────────────────────────────────────────────────┐ │
