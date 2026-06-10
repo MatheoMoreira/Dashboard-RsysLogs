@@ -25,6 +25,7 @@ final class EventsController extends Controller
         $filters = [
             'event'     => trim((string) ($_GET['event'] ?? '')),
             'level'     => trim((string) ($_GET['level'] ?? '')),
+            'traffic'   => trim((string) ($_GET['traffic'] ?? '')),
             'user_id'   => trim((string) ($_GET['user_id'] ?? '')),
             'date_from' => trim((string) ($_GET['date_from'] ?? '')),
             'date_to'   => trim((string) ($_GET['date_to'] ?? '')),

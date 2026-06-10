@@ -43,11 +43,13 @@ final class DashboardController extends Controller
             'last24h'      => $model->totalSince('24 HOUR'),
             'prev24h'      => $model->previous24h(),
             'securityHits' => $model->securityCount($security),
+            'web'          => $model->webTraffic(),
+            'hourlySplit'  => $model->hourlyTrafficSplit(),
+            'botUas'       => $model->topBotUserAgents(),
             'byCategory'   => $byCategory,
             'byChannel'    => $model->countByChannel(),
             'byEvent'      => $countByEvent,
             'byLevel'      => $model->countByLevel(),
-            'hourly'       => $model->hourlyLast24h(),
             'secBreakdown' => $model->securityBreakdown($security),
             'secTopIps'    => $model->topSecurityIps($security),
             'secRecent'    => $model->recentSecurity($security),
@@ -69,12 +71,16 @@ final class DashboardController extends Controller
 
         $config = require dirname(__DIR__, 2) . '/config/config.php';
         $model = new EventModel();
+        $web = $model->webTraffic();
 
         $this->json([
             'ready'        => true,
             'total'        => $model->total(),
             'last24h'      => $model->totalSince('24 HOUR'),
             'securityHits' => $model->securityCount($config['security_events']),
+            'webTotal'     => $web['total'],
+            'webHuman'     => $web['human'],
+            'webBot'       => $web['bot'],
         ]);
     }
 }

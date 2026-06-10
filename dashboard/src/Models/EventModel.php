@@ -82,6 +82,76 @@ final class EventModel
     }
 
     /**
+     * Compteurs de trafic web (accès vus par nginx : http_access + scanner_probe),
+     * ventilés humain / bot via la colonne générée is_bot.
+     *
+     * @return array{total:int, human:int, bot:int}
+     */
+    public function webTraffic(): array
+    {
+        $row = $this->db->query(
+            "SELECT
+                 COUNT(*)                              AS total,
+                 SUM(CASE WHEN is_bot = 0 THEN 1 ELSE 0 END) AS human,
+                 SUM(CASE WHEN is_bot = 1 THEN 1 ELSE 0 END) AS bot
+             FROM events
+             WHERE channel = 'nginx'"
+        )->fetch();
+
+        return [
+            'total' => (int) ($row['total'] ?? 0),
+            'human' => (int) ($row['human'] ?? 0),
+            'bot'   => (int) ($row['bot'] ?? 0),
+        ];
+    }
+
+    /**
+     * Répartition horaire des dernières 24h du trafic web, séparée humain/bot
+     * (pour une timeline empilée).
+     *
+     * @return array<string, array{human:int, bot:int}> clé = "Y-m-d H:00"
+     */
+    public function hourlyTrafficSplit(): array
+    {
+        $rows = $this->db->query(
+            "SELECT DATE_FORMAT(received_at, '%Y-%m-%d %H:00') AS slot,
+                    SUM(CASE WHEN is_bot = 0 THEN 1 ELSE 0 END) AS human,
+                    SUM(CASE WHEN is_bot = 1 THEN 1 ELSE 0 END) AS bot
+             FROM events
+             WHERE channel = 'nginx' AND received_at >= (NOW() - INTERVAL 24 HOUR)
+             GROUP BY slot ORDER BY slot"
+        )->fetchAll();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[$row['slot']] = ['human' => (int) $row['human'], 'bot' => (int) $row['bot']];
+        }
+        return $result;
+    }
+
+    /**
+     * User-agents de bots les plus fréquents (trafic web classé is_bot=1).
+     *
+     * @return array<string, int> user_agent => nombre de requêtes
+     */
+    public function topBotUserAgents(int $limit = 6): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT COALESCE(user_agent, '(vide)') AS ua, COUNT(*) AS n
+             FROM events
+             WHERE channel = 'nginx' AND is_bot = 1
+             GROUP BY ua ORDER BY n DESC LIMIT {$limit}"
+        );
+        $stmt->execute();
+
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $result[$row['ua']] = (int) $row['n'];
+        }
+        return $result;
+    }
+
+    /**
      * Nombre d'événements par canal applicatif (channel), colonne générée
      * depuis le JSON mais jusqu'ici non exploitée par le dashboard.
      *
@@ -214,7 +284,7 @@ final class EventModel
     /**
      * Liste paginée et filtrée des événements.
      *
-     * @param array{event?:string,level?:string,user_id?:string,date_from?:string,date_to?:string} $filters
+     * @param array{event?:string,level?:string,user_id?:string,date_from?:string,date_to?:string,traffic?:string} $filters
      * @return array{rows: list<array<string,mixed>>, total: int}
      */
     public function paginate(array $filters, int $page, int $perPage): array
@@ -226,7 +296,7 @@ final class EventModel
         $total = (int) $countStmt->fetchColumn();
 
         $offset = max(0, ($page - 1) * $perPage);
-        $sql = "SELECT id, received_at, event, level, user_id, ip, method, path, raw_json
+        $sql = "SELECT id, received_at, event, level, user_id, ip, method, path, is_bot, raw_json
                 FROM events {$where}
                 ORDER BY id DESC
                 LIMIT {$perPage} OFFSET {$offset}";
@@ -292,6 +362,12 @@ final class EventModel
         if (!empty($filters['date_to'])) {
             $conditions[] = 'received_at <= ?';
             $params[] = $filters['date_to'] . ' 23:59:59';
+        }
+        // Filtre trafic : 'human' (is_bot=0) ou 'bot' (is_bot=1) ; vide = tout.
+        if (($filters['traffic'] ?? '') === 'human') {
+            $conditions[] = 'is_bot = 0';
+        } elseif (($filters['traffic'] ?? '') === 'bot') {
+            $conditions[] = 'is_bot = 1';
         }
 
         $where = $conditions === [] ? '' : 'WHERE ' . implode(' AND ', $conditions);
