@@ -17,5 +17,7 @@
 
 {$RESA_DOMAIN} {
 	encode gzip
-	reverse_proxy resa-frontend:80
+	# Caddy tourne en réseau hôte ; il joint le frontend nginx publié sur la
+	# loopback (cf. docker-compose : 127.0.0.1:8081 -> conteneur:80).
+	reverse_proxy 127.0.0.1:8081
 }
