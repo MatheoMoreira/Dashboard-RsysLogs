@@ -55,7 +55,8 @@ Projet réalisé **individuellement** par **Mathéo Moreira**.
 ### L7 — Qualité logicielle
 - [x] Configuration **PHPStan** niveau 6 (`dashboard/phpstan.neon`) — `composer analyse`, **0 erreur**
 - [x] Extraction des helpers (`src/helpers.php`) pour la modularité et l'analyse statique
-- [x] Tests unitaires **PHPUnit** des fonctions utilitaires (`tests/Unit/HelpersTest.php`) — `composer test`
+- [x] Tests unitaires **PHPUnit** (28 tests) sur 3 couches — helpers, Model (`EventModel::buildWhere`), Core (`Router::normalizePath`) — `composer test`
+- [x] **Performances mesurées** sur banc d'essai à 1 M de lignes + optimisation index ([../docs/08-performances.md](08-performances.md))
 
 ## Échéancier (jalons)
 
@@ -66,11 +67,61 @@ Projet réalisé **individuellement** par **Mathéo Moreira**.
 | J3 | Journalisation étendue (accès nginx, slow query log) + refonte visuelle | `v1.1.0` |
 | J4 | Dossier documentaire complet + qualité logicielle | en cours |
 
+## Gestion des risques
+
+Registre des risques du projet (probabilité P et impact I sur 3 ; criticité = P × I).
+Les **risques survenus** sont marqués 🔴 et reliés à l'action réellement déclenchée —
+ce qui rend ce registre vérifiable dans l'historique Git plutôt que purement théorique.
+
+| # | Risque | P | I | Crit. | Mitigation prévue | Statut / action réelle |
+|---|--------|:-:|:-:|:----:|-------------------|------------------------|
+| R-01 | Altération/suppression des journaux via l'interface de consultation | 2 | 3 | 6 | Moindre privilège : `dashboard_ro` en `SELECT` seul | ✅ Maîtrisé (cf. ANSSI R4/R5, test T-04) |
+| R-02 | **IP source masquée** par le NAT Docker (journaux inexploitables) | 3 | 2 | 6 | Reverse-proxy transmettant `X-Forwarded-For` | 🔴 **Survenu** (2026-06-10) : `userland-proxy` réécrivait l'IP en `172.18.0.1`. Action : Caddy en `network_mode: host` (commit `2d7706a`) après échec d'une 1re piste (`daemon.json`) |
+| R-03 | Identifiants en clair sur le réseau (frontend HTTP) | 2 | 3 | 6 | TLS | ✅ Traité : Caddy + Let's Encrypt (commit `f06440c`) |
+| R-04 | Dashboard indisponible si MariaDB pas encore prête au boot | 3 | 1 | 3 | `healthcheck` + page d'attente `isReady()` | ✅ Maîtrisé |
+| R-05 | **Dégradation des perfs** à forte volumétrie (≥ 10⁶ lignes) | 2 | 2 | 4 | Index sur colonnes générées | 🔴 **Survenu en test** : KPI trafic à ~4,2 s à 1 M. Action : index composite `(channel, is_bot)` → ~80 ms (cf. [08-performances.md](08-performances.md)) |
+| R-06 | Saturation disque par croissance illimitée de la table `events` | 2 | 2 | 4 | Politique de rétention / purge | 🟡 Identifié, planifié (ANSSI R11) |
+| R-07 | Scans automatisés polluant les journaux / sondant des failles | 3 | 1 | 3 | Blocage 403 + classification bot | ✅ Traité (commit `f06440c`, `1fe9589`) |
+| R-08 | Perte de la base (volume Docker corrompu/supprimé) | 1 | 3 | 3 | Sauvegarde externalisée | 🟡 Identifié, planifié (ANSSI R12) |
+| R-09 | Périmètre solo : facteur de bus = 1, surcharge ponctuelle | 2 | 2 | 4 | Découpage en `feature/*`, doc à jour | 🟢 Accepté (contrainte projet) |
+
+> Deux risques se sont **effectivement matérialisés** (R-02, R-05) et ont déclenché une
+> action tracée dans Git — la colonne « action réelle » est donc opposable.
+
+## Indicateurs de suivi (prévu / réalisé)
+
+Suivi par jalon, **reconstruit depuis l'historique Git** (dates et volumes de commits
+vérifiables) — c'est la source de vérité du projet, à défaut d'un outil de gestion tiers.
+
+| Jalon | Contenu | Fin prévue | Fin réelle | Écart | Commits |
+|-------|---------|:----------:|:----------:|:-----:|:------:|
+| J1 | App Resa + journalisation `EventLogger` | 08/06 | 08/06 | 0 | 5 |
+| J2 | Chaîne rsyslog → MariaDB + dashboard MVC | 09/06 | 09/06 | 0 | ~20 |
+| J3 | Journalisation étendue (nginx, slow log) + refonte visuelle | 09/06 | 09–10/06 | +0,5 j | ~15 |
+| J4 | HTTPS + anti-scan + classif. bot + dossier doc + qualité | 10/06 | 11/06 | +1 j | ~12 |
+| J5 | **Renforcement preuve** (perf mesurée, risques, IA brute) | 11/06 | 11/06 | 0 | en cours |
+
+**Indicateurs synthétiques** (au 2026-06-11) :
+
+| Indicateur | Valeur |
+|-----------|--------|
+| Livrables terminés | 7 / 7 (L1–L7) |
+| Jalons tenus | 4 / 4 clôturés (écart cumulé +1,5 j sur 4 j) |
+| Commits (total / sur `main`) | 59, 100 % attribuables (solo) |
+| Couverture tests | 28 tests / 48 assertions, couches Model + Core + helpers |
+| PHPStan | niveau 6, 0 erreur |
+| Exigences perf vérifiées | 3 / 3 mesurées (cf. P-1…P-3) |
+
+**Analyse des écarts** : l'étalement réel (08→11/06) est plus dense que prévu côté J3/J4,
+absorbé sans re-planification du périmètre. Le seul aléa non anticipé (R-02, IP réelle) a
+coûté ~½ journée mais a abouti à une solution durable (host-network documentée en mémoire
+projet).
+
 ## Traçabilité Git (critère 20)
 
 - **Workflow** : `main` (stable, tags) ← `develop` (intégration) ← `feature/*`
   (une branche par fonctionnalité, merges `--no-ff`).
 - **Branches** : `feature/resa-app`, `feature/php-dashboard`, `feature/docker-stack`, …
-- **Volume** : 47 commits, 100 % attribuables à Mathéo Moreira (projet solo).
+- **Volume** : 59 commits, 100 % attribuables à Mathéo Moreira (projet solo).
 
 > Vérification par l'évaluateur : `python3 eval/eval.py commits --repo <dépôt>`.
