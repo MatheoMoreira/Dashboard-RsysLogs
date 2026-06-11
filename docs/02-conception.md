@@ -34,14 +34,19 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 
 ## 3. Objectifs du projet (SMART)
 
-| Objectif | S | M (mesurable) | A | R | T |
-|----------|---|---------------|---|---|---|
-| O1 — Centraliser 100 % des événements de Resa dans une base unique | ✔ | 0 perte sur la chaîne app → rsyslog → MariaDB | ✔ | ✔ | livré v1.0 |
-| O2 — Garantir l'intégrité par moindre privilège | ✔ | dashboard incapable d'écrire (compte `SELECT` seul) | ✔ | ✔ | livré v1.0 |
-| O3 — Fournir un dashboard de visualisation MVC | ✔ | vue d'ensemble + liste + détail opérationnelles | ✔ | ✔ | livré v1.0 |
-| O4 — Déploiement en une commande | ✔ | `docker compose up` lève les 6 services | ✔ | ✔ | livré v1.0 |
-| O5 — Tracer les accès réseau (IP source réelle) | ✔ | `http_access` nginx visible dans le dashboard, IP cliente restituée derrière le proxy | ✔ | ✔ | livré v1.1 |
-| O6 — Sécuriser les flux et le périmètre | ✔ | HTTPS (Caddy/Let's Encrypt) + blocage 403 des scans + classification humain/bot | ✔ | ✔ | livré v1.2 |
+La colonne **Atteint ?** reporte la **mesure réelle** observée (et non la cible),
+avec le pointeur de preuve (test de recette `T-xx` ou mesure de performance `P-x`).
+Les versions citées en colonne `T` correspondent aux tags Git du dépôt
+(`v1.0.0`, `v1.1.0`, `v1.2.0`).
+
+| Objectif | S | M (mesurable) | A | R | T | Atteint ? (mesure réelle) |
+|----------|---|---------------|---|---|---|---------------------------|
+| O1 — Centraliser 100 % des événements de Resa dans une base unique | ✔ | 0 perte sur la chaîne app → rsyslog → MariaDB | ✔ | ✔ | livré v1.0 | ✅ Oui — événements `user_login`/`failed_login` insérés en base (recette **T-01**, **T-02**) |
+| O2 — Garantir l'intégrité par moindre privilège | ✔ | dashboard incapable d'écrire (compte `SELECT` seul) | ✔ | ✔ | livré v1.0 | ✅ Oui — `ERROR 1142 … DELETE command denied to 'dashboard_ro'` (recette **T-04**) |
+| O3 — Fournir un dashboard de visualisation MVC | ✔ | vue d'ensemble + liste + détail opérationnelles | ✔ | ✔ | livré v1.0 | ✅ Oui — 3 vues opérationnelles (recette **T-08**, **T-09**) |
+| O4 — Déploiement en une commande | ✔ | `docker compose up` lève les 6 services | ✔ | ✔ | livré v1.0 | ✅ Oui — 6 services `up` (mariadb, rsyslog, resa-backend, resa-frontend, caddy, dashboard) |
+| O5 — Tracer les accès réseau (IP source réelle) | ✔ | `http_access` nginx visible dans le dashboard, IP cliente restituée derrière le proxy | ✔ | ✔ | livré v1.1 | ✅ Oui — IP réelle restituée (recette **T-03**, **T-14**), et non `172.x` du conteneur |
+| O6 — Sécuriser les flux et le périmètre | ✔ | HTTPS (Caddy/Let's Encrypt) + blocage 403 des scans + classification humain/bot | ✔ | ✔ | livré v1.2 | ✅ Oui — HTTP→HTTPS `308` (**T-11**), `/.env` → `403` + `scanner_probe` (**T-12**), ventilation humain/bot (**T-13**) |
 
 ## 4. Fonctions principales
 
@@ -64,15 +69,17 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 
 ## 5. Critères de performance
 
-| Critère | Cible | Vérification |
+| Critère | Cible | Mesuré (cf. [08-performances.md](08-performances.md)) |
 |---------|-------|--------------|
-| Temps de réponse vue d'ensemble | < 500 ms pour ≤ 100 000 événements | colonnes générées **indexées** (`idx_event`, `idx_level`, `idx_received_at`) évitant le re-parsing JSON |
-| Latence d'ingestion (app → base) | < 1 s | insertion directe `ommysql`, pas de file intermédiaire |
-| Volumétrie supportée | ≥ 10⁶ lignes sans dégradation notable | `BIGINT` PK + index ; pagination côté liste |
+| Temps de réponse vue d'ensemble | < 500 ms pour ≤ 100 000 événements | **12 ms** (HTTP, base de démo) ; requêtes unitaires < 300 ms à **1 M** lignes ✅ |
+| Latence d'ingestion (app → base) | < 1 s | insertion directe `ommysql`, pas de file intermédiaire (qualitatif) |
+| Volumétrie supportée | ≥ 10⁶ lignes sans dégradation notable | **banc d'essai à 1 000 000 lignes** : pagination ~0,8 ms, agrégations ~200–300 ms ✅ |
 | Détection des requêtes lentes | requêtes ≥ 1 s tracées | **slow query log** MariaDB activé (`docker/mariadb/logging.cnf`) |
 
-> Les index sont posés sur les colonnes effectivement filtrées/triées par le
-> dashboard, ce qui garantit des `SELECT` sur colonnes plutôt que sur `JSON_EXTRACT`.
+> Ces cibles sont **mesurées et reproductibles** : protocole, résultats bruts et
+> plans d'exécution dans [08-performances.md](08-performances.md). La campagne a révélé
+> un goulot (calcul du trafic humain/bot, ~4,2 s à 1 M) **corrigé par un index composite
+> `(channel, is_bot)`** → ~80 ms (≈ 50×), intégré au schéma.
 
 ## 6. Contraintes techniques
 

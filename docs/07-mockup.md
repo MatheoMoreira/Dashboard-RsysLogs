@@ -1,8 +1,34 @@
 # Maquettes (mockups)
 
-Maquettes basse-fidélité (wireframes ASCII) des écrans clés du **dashboard de
-journalisation**. Elles décrivent la disposition cible ; l'implémentation réelle
-(style) est dans `dashboard/public/assets/style.css`.
+Maquettes **vectorielles (SVG, format outillé et éditable)** des écrans clés des
+**deux applications** : le dashboard de journalisation **et** l'application Resa.
+Elles décrivent la disposition cible ; l'implémentation réelle (style) est dans
+`dashboard/public/assets/style.css` (dashboard) et `resa/frontend/src/pages/` (Resa).
+Les rendus réels correspondants sont dans [`img/`](img/) (captures d'écran).
+
+> Les SVG ci-dessous sont produits hors-code (équivalent Figma/Excalidraw : fichiers
+> vectoriels versionnés, ré-ouvrables et modifiables). Les wireframes ASCII d'origine
+> sont conservés en **annexe basse-fidélité** en fin de document.
+
+## Écrans maquettés
+
+| Écran | Maquette SVG | Application |
+|-------|--------------|-------------|
+| Vue d'ensemble supervision (`/`) | [dashboard-overview.svg](mockups/dashboard-overview.svg) | Dashboard |
+| Connexion (`/login`) | [resa-login.svg](mockups/resa-login.svg) | Resa |
+| Salles + nouvelle réservation (`/rooms`, `/reservations/new`) | [resa-rooms.svg](mockups/resa-rooms.svg) | Resa |
+
+![Maquette — vue d'ensemble du dashboard](mockups/dashboard-overview.svg)
+
+![Maquette — connexion Resa](mockups/resa-login.svg)
+
+![Maquette — salles et réservation Resa](mockups/resa-rooms.svg)
+
+---
+
+## Annexe — wireframes basse-fidélité (ASCII)
+
+Conservés pour mémoire ; la version de référence est désormais SVG (ci-dessus).
 
 ## M-01 — Vue d'ensemble (`/`)
 

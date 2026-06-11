@@ -10,9 +10,14 @@ en complément du code source et du `README.md` racine (procédure d'installatio
 | 3 | Documentation utilisateur (cas d'utilisation) | [03-documentation-utilisateur.md](03-documentation-utilisateur.md) |
 | 4 | Tests de validation (état initial / action / résultat) | [04-tests-validation.md](04-tests-validation.md) |
 | 5 | Gestion de projet (tâches par livrable, répartition de la charge) | [05-gestion-projet.md](05-gestion-projet.md) |
-| 6 | Échanges avec les IA (prompts / résultats) | [06-echanges-ia.md](06-echanges-ia.md) |
+| 6 | Échanges avec les IA (prompts / résultats) — synthèse + [annexe brute](annexes/echanges-ia-bruts.md) | [06-echanges-ia.md](06-echanges-ia.md) |
 | 7 | Maquettes (mockups) | [07-mockup.md](07-mockup.md) |
-| 8 | Diagrammes UML & schémas | [uml/](uml/) |
+| 8 | **Critères de performance — protocole, mesures @ 1 M lignes, optimisation** | [08-performances.md](08-performances.md) |
+| 9 | Diagrammes UML & schémas | [uml/](uml/) |
+
+> Gestion de projet : [05-gestion-projet.md](05-gestion-projet.md) inclut aussi le
+> **registre des risques** (critère 25) et les **indicateurs de suivi prévu/réalisé**
+> (critère 26).
 
 ## Qualité logicielle (critères 22-24)
 
@@ -21,15 +26,17 @@ Le dashboard est analysé et testé (commandes depuis `dashboard/`) :
 ```bash
 composer install        # installe phpstan + phpunit (require-dev)
 composer analyse        # PHPStan niveau 6 — 0 erreur
-composer test           # PHPUnit — tests unitaires des helpers
+composer test           # PHPUnit — 28 tests, 48 assertions
 ```
 
 - **POO** : MVC maison (`Router`, `Controller` abstrait, `View`, `Database` en
   singleton, modèle `EventModel`), classes `final`, `declare(strict_types=1)`.
 - **PHPStan** : niveau 6, configuré dans `dashboard/phpstan.neon`.
-- **Tests unitaires** : `dashboard/tests/Unit/HelpersTest.php` (fonctions pures
-  `e()` / `fmt_dt()`). PHPUnit s'exécute dans le conteneur PHP (extensions `dom/xml`
-  fournies par l'image).
+- **Tests unitaires** : **28 tests** sur les couches *helpers* (`HelpersTest` —
+  `e()`, `fmt_dt()`, `fmt_bytes()`, `fmt_duration()`), *Model*
+  (`EventModelTest` — `EventModel::buildWhere`) et *Core* (`RouterTest` —
+  `Router::normalizePath`). PHPUnit s'exécute dans le conteneur PHP (extensions
+  `dom/xml` fournies par l'image).
 
 ## Diagrammes (`uml/`)
 

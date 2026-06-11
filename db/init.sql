@@ -43,5 +43,11 @@ CREATE TABLE IF NOT EXISTS events (
     KEY idx_level       (level),
     KEY idx_user        (user_id),
     KEY idx_received_at (received_at),
-    KEY idx_is_bot      (is_bot)
+    KEY idx_is_bot      (is_bot),
+
+    -- Index composite (channel, is_bot) : couvre le calcul des KPIs trafic
+    -- (COUNT humain/bot WHERE channel='nginx'). Mesuré sur 1 000 000 de lignes,
+    -- il fait passer cette requête de ~4 200 ms à ~80 ms (covering index,
+    -- « Using index »). Cf. docs/08-performances.md.
+    KEY idx_channel_isbot (channel, is_bot)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

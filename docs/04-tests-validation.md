@@ -143,3 +143,36 @@ voir [03-documentation-utilisateur.md](03-documentation-utilisateur.md)).
 | T-12 | UC-08 | R16/R17 | Anti-scan |
 | T-13 | UC-08 | R17 | Classification bot |
 | T-14 | — | R7 | IP réelle (proxy) |
+
+## Artefacts de preuve (recette rejouable)
+
+Pour ne pas en rester au déclaratif, les tests **automatisables** sont rejoués par
+[`db/verifs/run-recette.sh`](../db/verifs/run-recette.sh), qui écrit pour chacun un
+artefact **horodaté** (commande exacte + sortie brute + verdict `PASS/FAIL/SKIP`)
+sous `docs/verifs/<AAAA-MM-JJ_HHMMSS>/<T-xx>.txt`, avec un résumé `recette.md`.
+
+```bash
+cp .env.example .env            # si nécessaire
+docker compose up --build -d
+bash db/verifs/run-recette.sh   # ou : bash db/verifs/run-recette.sh T-04 T-12
+# → artefacts sous docs/verifs/<horodatage>/
+```
+
+| Test | Source de preuve | Type |
+|------|------------------|------|
+| T-01, T-02 | événement en base après login/échec (SELECT sur `events`) | manuel (UI Resa) |
+| T-04 | `run-recette.sh T-04` → `ERROR 1142 … denied` | **automatisé** |
+| T-05 | `run-recette.sh T-05` → port 514 injoignable depuis l'hôte | **automatisé** |
+| T-06, T-07 | refus UI + événement `double_booking_attempt` / `forbidden_action` | manuel (API) |
+| T-08 | `run-recette.sh T-08` → `GET / → 200` + `COUNT(*)` recoupé | **automatisé** |
+| T-09, T-10 | détail + JSON brut / page d'attente au boot | manuel (UI) |
+| T-11 | `run-recette.sh T-11` → en-tête `HTTP 308` + `Location: https` | **automatisé** |
+| T-12 | `run-recette.sh T-12` → `403` + delta `scanner_probe` | **automatisé** |
+| T-13 | `run-recette.sh T-13` → `GROUP BY is_bot` | **automatisé** |
+| T-14 | `run-recette.sh T-14` → IP clientes ≠ `172.x` du conteneur | **automatisé** |
+
+> Les tests rejoués hors de la machine de déploiement (domaine public non exposé,
+> trafic insuffisant) sont marqués `SKIP` dans l'artefact plutôt que faussement
+> `PASS` — la traçabilité reste honnête. Les sept tests automatisés couvrent les
+> mesures ANSSI les plus structurantes (intégrité, cloisonnement, HTTPS, anti-scan,
+> IP réelle).

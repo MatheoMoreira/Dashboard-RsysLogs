@@ -4,6 +4,10 @@ L'énoncé demande de documenter les échanges avec les IA et de les exploiter d
 façon **critique**. Cette section retrace les principaux usages, le résultat obtenu
 et la décision prise (acceptée / adaptée / rejetée).
 
+> **Échanges bruts** (prompts verbatim + extraits de réponses réels) :
+> [annexes/echanges-ia-bruts.md](annexes/echanges-ia-bruts.md). La présente page en est
+> la **synthèse critique**.
+>
 > Format : **Prompt** → **Réponse (synthèse)** → **Décision & justification**.
 
 ## É-01 — Architecture MVC du dashboard PHP sans framework
