@@ -20,12 +20,22 @@ final class Router
         $this->routes[$path] = [$controller, $action];
     }
 
-    public function dispatch(string $uri): void
+    /**
+     * Normalise une URI en chemin de route : isole le composant chemin, retire
+     * le slash final et ramène la racine vide à « / ».
+     *
+     * Méthode pure (sans effet de bord) : extraite de dispatch() pour être
+     * testable unitairement.
+     */
+    public static function normalizePath(string $uri): string
     {
         $path = rtrim(parse_url($uri, PHP_URL_PATH) ?? '/', '/');
-        if ($path === '') {
-            $path = '/';
-        }
+        return $path === '' ? '/' : $path;
+    }
+
+    public function dispatch(string $uri): void
+    {
+        $path = self::normalizePath($uri);
 
         if (!isset($this->routes[$path])) {
             http_response_code(404);
