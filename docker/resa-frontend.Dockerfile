@@ -67,6 +67,7 @@ server {
     # les journaux remontent la bonne adresse au dashboard.
     set_real_ip_from 172.16.0.0/12;
     set_real_ip_from 10.0.0.0/8;
+    set_real_ip_from 127.0.0.0/8;
     real_ip_header   X-Forwarded-For;
     real_ip_recursive on;
 

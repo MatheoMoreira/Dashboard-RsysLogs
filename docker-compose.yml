@@ -63,26 +63,26 @@ services:
       - rsyslog
 
   # 4) Application Resa — frontend React (servi par nginx, HTTP interne).
-  # Plus d'exposition directe sur l'hôte : le trafic public passe par Caddy.
+  # Publié uniquement sur la loopback (127.0.0.1) pour que Caddy, qui tourne en
+  # réseau hôte, puisse le joindre — jamais exposé publiquement.
   resa-frontend:
     build:
       context: ./resa/frontend
       dockerfile: ../../docker/resa-frontend.Dockerfile
     restart: unless-stopped
-    expose:
-      - "80"
+    ports:
+      - "127.0.0.1:8081:80"
     depends_on:
       - resa-backend
 
   # 4 bis) Reverse-proxy Caddy — point d'entrée public + TLS automatique
-  # (Let's Encrypt). Relaie en HTTP interne vers resa-frontend.
+  # (Let's Encrypt). En RÉSEAU HÔTE : il reçoit l'IP source réelle des clients
+  # (aucun NAT Docker en entrée), qu'il transmet en X-Forwarded-For. Il relaie
+  # vers le frontend via la loopback (127.0.0.1:8081).
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"   # HTTP/3 (QUIC)
+    network_mode: host
     environment:
       RESA_DOMAIN: ${RESA_DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL}

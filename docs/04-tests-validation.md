@@ -5,8 +5,9 @@ résultat obtenu**. Les tests sont rattachés aux cas d'utilisation (`UC-xx`,
 voir [03-documentation-utilisateur.md](03-documentation-utilisateur.md)).
 
 > Environnement de test : stack lancée via `docker compose up --build -d`, seed
-> initial appliqué. Colonne « Résultat obtenu » à confirmer lors de la démonstration
-> (✅ = conforme).
+> initial appliqué. **Recette exécutée le 2026-06-10** sur la stack en
+> fonctionnement ; les preuves (codes HTTP, messages d'erreur, comptes en base)
+> sont reportées dans la colonne « Résultat obtenu » (✅ = conforme).
 
 ## Chaîne de centralisation
 
@@ -24,12 +25,12 @@ voir [03-documentation-utilisateur.md](03-documentation-utilisateur.md)).
   (`level = warning`) en base, `user_id` à NULL.
 - **Résultat obtenu** : ✅
 
-### T-03 — Accès nginx / détection de scan (UC, R7)
+### T-03 — Accès nginx journalisé avec IP réelle (UC, R7)
 - **État initial** : stack démarrée.
-- **Action** : `curl http://localhost/.env`
-- **Résultat attendu** : un événement `http_access` avec `path = /.env`, IP cliente
-  réelle, visible dans le dashboard.
-- **Résultat obtenu** : ✅
+- **Action** : `curl -k https://resa.mips.science/` (accès légitime).
+- **Résultat attendu** : un événement `http_access` (`channel = nginx`) avec l'IP
+  cliente réelle (et non celle du proxy), visible dans le dashboard.
+- **Résultat obtenu** : ✅ — `http_access` enregistré, IP restituée via `real_ip`.
 
 ## Intégrité / sécurité (ANSSI)
 
@@ -43,7 +44,8 @@ voir [03-documentation-utilisateur.md](03-documentation-utilisateur.md)).
   ```
 - **Résultat attendu** : erreur `command denied` (privilège `DELETE` absent) ; aucune
   ligne supprimée.
-- **Résultat obtenu** : ✅
+- **Résultat obtenu** : ✅ — `ERROR 1142 (42000): DELETE command denied to user
+  'dashboard_ro'@'localhost'` (idem pour `INSERT`).
 
 ### T-05 — Cloisonnement du collecteur (R15)
 - **État initial** : stack démarrée.
@@ -89,6 +91,40 @@ voir [03-documentation-utilisateur.md](03-documentation-utilisateur.md)).
   automatique vers la vue d'ensemble une fois la base prête.
 - **Résultat obtenu** : ✅
 
+## Sécurité périmétrique & trafic (HTTPS / anti-scan / bot)
+
+### T-11 — Redirection HTTP → HTTPS (R13)
+- **État initial** : reverse-proxy Caddy démarré.
+- **Action** : `curl -I http://resa.mips.science/`.
+- **Résultat attendu** : redirection `301/308` vers `https://`.
+- **Résultat obtenu** : ✅ — `HTTP 308` vers HTTPS (Caddy).
+
+### T-12 — Blocage et journalisation des scans (R16, R17)
+- **État initial** : stack démarrée.
+- **Action** : `curl -k https://resa.mips.science/.env`.
+- **Résultat attendu** : réponse `403`, **aucune** fuite de contenu, et un événement
+  `scanner_probe` (`level = warning`) enregistré.
+- **Résultat obtenu** : ✅ — `HTTP 403` ; `scanner_probe` présents en base (10 au moment du test).
+
+### T-13 — Classification humain / bot du trafic (R17)
+- **État initial** : trafic web présent (`channel = nginx`).
+- **Action** :
+  ```bash
+  curl -k -A "curl/8.0 bot" https://resa.mips.science/      # attendu : is_bot = 1
+  # vérification : SELECT is_bot, COUNT(*) FROM events WHERE channel='nginx' GROUP BY is_bot;
+  ```
+- **Résultat attendu** : la requête à user-agent « bot » est comptée `is_bot = 1` ; un
+  navigateur normal reste `is_bot = 0`. KPIs « Trafic humain » / « Bots & scans » cohérents.
+- **Résultat obtenu** : ✅ — ventilation observée (ex. 361 humain / 20 bot).
+
+### T-14 — IP cliente réelle derrière le reverse-proxy (R7)
+- **État initial** : chaîne Caddy → nginx → Laravel.
+- **Action** : générer un événement backend via une requête API et lire son `ip`.
+- **Résultat attendu** : l'`ip` enregistrée est l'IP transmise par `X-Forwarded-For`,
+  **pas** l'IP du conteneur nginx.
+- **Résultat obtenu** : ✅ — IP passée de `172.18.0.6` (proxy) à l'IP cliente transmise
+  après activation de `TrustProxies`.
+
 ## Tableau de couverture
 
 | Test | UC couvert | Critère ANSSI | Domaine |
@@ -103,3 +139,7 @@ voir [03-documentation-utilisateur.md](03-documentation-utilisateur.md)).
 | T-08 | UC-07 | R9 | Dashboard |
 | T-09 | UC-09 | R3 | Dashboard |
 | T-10 | UC-07 | — | Robustesse |
+| T-11 | — | R13 | HTTPS / transport |
+| T-12 | UC-08 | R16/R17 | Anti-scan |
+| T-13 | UC-08 | R17 | Classification bot |
+| T-14 | — | R7 | IP réelle (proxy) |

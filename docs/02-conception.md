@@ -26,11 +26,11 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 
 ### Besoins d'évolution identifiés (priorisés)
 
-1. **P1** — Politique de rétention / purge automatique des journaux.
-2. **P1** — Alerting sur seuils (ex. rafale de `failed_login`).
-3. **P2** — Authentification d'accès au dashboard (rôles consultation/admin).
-4. **P2** — Filtres et recherche avancée (par plage de dates, par IP).
-5. **P3** — Export (CSV/JSON) et transport chiffré TLS vers collecteur distant.
+1. **P1** — Politique de rétention / purge automatique des journaux. *(à faire)*
+2. **P1** — Alerting sur seuils (ex. rafale de `failed_login`). *(partiel : scans bloqués + acquittement des alertes en place ; notification à faire)*
+3. **P2** — Authentification d'accès au dashboard (rôles consultation/admin). *(à faire)*
+4. **P2** — ✅ **Réalisé** — Filtres et recherche avancée (plage de dates, type, niveau, **trafic humain/bot**).
+5. **P3** — ✅ **Réalisé (web)** — Chiffrement TLS du frontend (Caddy/Let's Encrypt). Export CSV/JSON et TLS du transport des journaux : à faire.
 
 ## 3. Objectifs du projet (SMART)
 
@@ -39,8 +39,9 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 | O1 — Centraliser 100 % des événements de Resa dans une base unique | ✔ | 0 perte sur la chaîne app → rsyslog → MariaDB | ✔ | ✔ | livré v1.0 |
 | O2 — Garantir l'intégrité par moindre privilège | ✔ | dashboard incapable d'écrire (compte `SELECT` seul) | ✔ | ✔ | livré v1.0 |
 | O3 — Fournir un dashboard de visualisation MVC | ✔ | vue d'ensemble + liste + détail opérationnelles | ✔ | ✔ | livré v1.0 |
-| O4 — Déploiement en une commande | ✔ | `docker compose up` lève les 5 services | ✔ | ✔ | livré v1.0 |
-| O5 — Tracer les accès réseau (IP source) | ✔ | `http_access` nginx visible dans le dashboard | ✔ | ✔ | livré v1.1 |
+| O4 — Déploiement en une commande | ✔ | `docker compose up` lève les 6 services | ✔ | ✔ | livré v1.0 |
+| O5 — Tracer les accès réseau (IP source réelle) | ✔ | `http_access` nginx visible dans le dashboard, IP cliente restituée derrière le proxy | ✔ | ✔ | livré v1.1 |
+| O6 — Sécuriser les flux et le périmètre | ✔ | HTTPS (Caddy/Let's Encrypt) + blocage 403 des scans + classification humain/bot | ✔ | ✔ | livré v1.2 |
 
 ## 4. Fonctions principales
 
@@ -55,6 +56,11 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 - **F5 — Mise en évidence sécurité** : événements de sécurité distingués (niveau,
   type), accès nginx incluant les scans.
 - **F6 — Cloisonnement des privilèges** : écriture et lecture sur deux comptes distincts.
+- **F7 — Classification du trafic humain / bot** : chaque accès web est marqué
+  `is_bot` (scans bloqués + signatures de `user_agent`) ; KPIs et filtre dédiés.
+- **F8 — Durcissement du frontend** : reverse-proxy Caddy (HTTPS/TLS automatique),
+  blocage (403) et journalisation des sondes de scanners (`scanner_probe`),
+  restitution de l'IP cliente réelle sur toute la chaîne (`real_ip` / `TrustProxies`).
 
 ## 5. Critères de performance
 
@@ -73,8 +79,9 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 | Domaine | Contrainte |
 |---------|-----------|
 | OS / runtime | Docker Engine + plugin `docker compose` (Linux). |
-| Services | 5 conteneurs : `resa-frontend` (nginx), `resa-backend` (Laravel), `rsyslog`, `mariadb`, `dashboard` (PHP). |
-| Réseau | Port 514 (rsyslog) **non publié** sur l'hôte (réseau Docker interne uniquement). Ports exposés : 80 (Resa), 8080 (dashboard), 8000 (API), 3306 (MariaDB). |
+| Services | 6 conteneurs : `caddy` (reverse-proxy TLS), `resa-frontend` (nginx), `resa-backend` (Laravel), `rsyslog`, `mariadb`, `dashboard` (PHP). |
+| Réseau | Port 514 (rsyslog) et le frontend nginx **non publiés** sur l'hôte (réseau Docker interne). Entrée publique via Caddy : **80 → redirige vers 443 (HTTPS)**. Autres ports exposés : 8080 (dashboard), 8000 (API), 3306 (MariaDB). |
+| TLS | Certificat **Let's Encrypt** automatique (Caddy) pour le domaine public ; nom de domaine + e-mail ACME paramétrés via `.env` (`RESA_DOMAIN`, `ACME_EMAIL`). |
 | Sécurité | Moindre privilège DB (2 comptes), aucun compte de démo exposé hormis l'admin du seed. |
 | Compatibilité | PHP ≥ 8.1 (dashboard) / PHP 8.4 (backend), MariaDB, MySQL `ommysql`. |
 | Format d'échange | JSON sur une ligne, compatible insertion `ommysql` et colonnes générées. |
@@ -84,7 +91,8 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 | Composant | Rôle | Version |
 |-----------|------|---------|
 | Docker Engine / Compose | Orchestration | plugin `compose` v2 |
-| nginx | Service frontend + émission `http_access` | image officielle |
+| Caddy | Reverse-proxy public + TLS automatique (Let's Encrypt) | `caddy:2-alpine` |
+| nginx | Service frontend + émission `http_access` + blocage des scans | image officielle |
 | Laravel | API backend Resa + journalisation | 12 (PHP 8.4) |
 | React + Vite + Tailwind | SPA frontend Resa | React 19 / Vite / Tailwind v4 |
 | Laravel Sanctum | Authentification API (tokens) | — |
