@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 460" font-family="Segoe UI, Arial, sans-serif">
+  <style>
+    .frame{fill:#fff;stroke:#9aa3af;stroke-width:1.5}
+    .nav{fill:#3b5168}
+    .card{fill:#fbfcfd;stroke:#c5ccd6;stroke-width:1}
+    .img{fill:#dfe4ea}
+    .btn{fill:#3b5168}
+    .tb{fill:#111;font-size:13px;font-weight:bold}
+    .t{fill:#333;font-size:11px}
+    .tm{fill:#777;font-size:10px}
+    .navt{fill:#eaf0f6;font-size:11px}
+  </style>
+  <rect x="8" y="8" width="744" height="444" rx="6" class="frame"/>
+  <!-- nav -->
+  <rect x="8" y="8" width="744" height="38" rx="6" class="nav"/>
+  <text x="24" y="32" fill="#fff" font-size="13" font-weight="bold">Resa</text>
+  <text x="120" y="32" class="navt">Accueil (/)</text>
+  <text x="210" y="32" class="navt">Salles (/rooms)</text>
+  <text x="330" y="32" class="navt">Mes réservations (/reservations)</text>
+  <text x="690" y="32" class="navt">Admin</text>
+  <text x="24" y="74" class="tb">Salles disponibles</text>
+  <text x="24" y="92" class="tm">Filtres : capacité ▾ · équipement ▾ · date ▾</text>
+  <!-- 3 room cards -->
+  <g>
+    <rect x="24" y="108" width="220" height="160" rx="6" class="card"/><rect x="36" y="120" width="196" height="80" rx="4" class="img"/><text x="36" y="222" class="tb">Salle Apollo</text><text x="36" y="240" class="tm">10 places · projecteur</text><rect x="36" y="248" width="90" height="26" rx="4" class="btn"/><text x="48" y="265" fill="#fff" font-size="10">Réserver</text>
+    <rect x="262" y="108" width="220" height="160" rx="6" class="card"/><rect x="274" y="120" width="196" height="80" rx="4" class="img"/><text x="274" y="222" class="tb">Salle Borée</text><text x="274" y="240" class="tm">4 places · écran</text><rect x="274" y="248" width="90" height="26" rx="4" class="btn"/><text x="286" y="265" fill="#fff" font-size="10">Réserver</text>
+    <rect x="500" y="108" width="220" height="160" rx="6" class="card"/><rect x="512" y="120" width="196" height="80" rx="4" class="img"/><text x="512" y="222" class="tb">Salle Cyclope</text><text x="512" y="240" class="tm">20 places · visio</text><rect x="512" y="248" width="90" height="26" rx="4" class="btn"/><text x="524" y="265" fill="#fff" font-size="10">Réserver</text>
+  </g>
+  <text x="24" y="300" class="tm">Clic « Réserver » → /reservations/new (UC-04)</text>
+  <line x1="24" y1="312" x2="736" y2="312" stroke="#e0e4ea"/>
+  <text x="24" y="338" class="tb">/reservations/new — nouvelle réservation</text>
+  <rect x="24" y="350" width="340" height="86" rx="6" class="card"/>
+  <text x="36" y="372" class="t">Salle : Apollo ▾</text>
+  <text x="36" y="394" class="t">Créneau : 14:00 → 15:00 · 12/06</text>
+  <rect x="36" y="402" width="110" height="26" rx="4" class="btn"/><text x="48" y="419" fill="#fff" font-size="10">Confirmer</text>
+  <rect x="380" y="350" width="340" height="86" rx="6" class="card"/>
+  <text x="392" y="372" class="t">⚠ Chevauchement détecté</text>
+  <text x="392" y="394" class="tm">Refus + événement double_booking_attempt</text>
+  <text x="392" y="414" class="tm">(règle métier · test T-06)</text>
+</svg>

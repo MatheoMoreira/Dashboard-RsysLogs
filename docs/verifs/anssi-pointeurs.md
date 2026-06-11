@@ -6,14 +6,17 @@
 > attendu par la grille (crit. 1) : « pointeur vers l'élément du projet qui implémente
 > la mesure, contrôlé par le correcteur ».
 
-> ⚠️ **À FAIRE avant le rendu — numérotation source (lève le plafond R-P3).**
+> **Source primaire jointe au dépôt.** Le guide officiel est désormais versionné :
+> [`../../supports/anssi-guide-recommandations_securite_architecture_systeme_journalisation.pdf`](../../supports/anssi-guide-recommandations_securite_architecture_systeme_journalisation.pdf)
+> (**ANSSI-PA-012/ANSSI/SDE, 28/01/2022**). Le correcteur peut donc vérifier chaque
+> mesure contre le texte de référence directement depuis le dépôt.
+>
+> ⚠️ **Reste à finaliser — numérotation source (lève le plafond R-P3).**
 > La numérotation `R1…R17` de `01-analyse-anssi.md` est **interne au projet**, pas
-> celle du guide. Ouvrir le PDF
-> `supports/anssi-guide-recommandations_securite_architecture_systeme_journalisation.pdf`
-> (ANSSI-PA-012, 28/01/2022), **annexe « Liste des recommandations »**, et remplacer
-> chaque ligne par le **numéro et l'intitulé verbatim** de la recommandation
-> correspondante du guide. Tant que ce mapping n'est pas fait, le critère 1 est
-> plafonné à 0,5 (R-P3) malgré des implémentations réelles.
+> celle du guide. Reprendre l'**annexe « Liste des recommandations »** du PDF joint et
+> remplacer chaque ligne par le **numéro et l'intitulé verbatim** de la recommandation
+> correspondante. Tant que ce mapping verbatim n'est pas fait, le critère 1 reste
+> plafonné à 0,5 (R-P3) malgré des implémentations réelles et la source désormais jointe.
 
 ## Mesures implémentées — pointeurs et contrôles
 

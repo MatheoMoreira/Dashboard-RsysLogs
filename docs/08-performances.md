@@ -38,7 +38,10 @@ FROM seq_1_to_1000000;            -- script complet : db/bench/bench-1M.sql
 
 ## 3. Résultats bruts @ 1 000 000 lignes
 
-Chaque requête est exécutée 3 fois (cache chaud) ; on reporte l'ordre de grandeur stable.
+Chaque requête est exécutée 3 fois (cache chaud) ; on reporte l'ordre de grandeur
+stable. Les durées sont produites en millisecondes par le script de mesure
+[`db/bench/measure.sql`](../db/bench/measure.sql) (`TIMESTAMPDIFF(MICROSECOND, …)` +
+`EXPLAIN`), rejouable tel quel par le correcteur (cf. §5).
 
 | Requête (représentative du dashboard) | Index utilisé (EXPLAIN) | Durée |
 |----------------------------------------|--------------------------|------:|

@@ -3,14 +3,14 @@
 skinparam componentStyle rectangle
 left to right direction
 
-rectangle "Application Resa (:80)" {
-  [/, login]            as RLogin
+rectangle "Application Resa (HTTPS, via Caddy)" {
+  [/login]              as RLogin
   [/register]           as RReg
-  [/dashboard]          as RHome
+  [/  (accueil)]        as RHome
   [/rooms]              as RRooms
   [/rooms/{id}]         as RRoom
   [/reservations/new]   as RNew
-  [/reservations/mine]  as RMine
+  [/reservations]       as RMine
   [/404]                as R404
 
   RLogin --> RReg
@@ -21,7 +21,7 @@ rectangle "Application Resa (:80)" {
   RHome --> RMine
 
   rectangle "Espace admin" {
-    [/admin/dashboard]     as ADash
+    [/admin]               as ADash
     [/admin/rooms]         as ARooms
     [/admin/reservations]  as ARes
     [/admin/users]         as AUsers

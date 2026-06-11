@@ -1,12 +1,18 @@
 @startuml deploiement
-' Diagramme de déploiement — stack Docker (5 services)
+' Diagramme de déploiement — stack Docker (6 services)
 skinparam componentStyle rectangle
 
 node "Hôte Docker" {
 
+  node "caddy\n(reverse-proxy, network_mode host)" as Caddy {
+    [Terminaison TLS\n(Let's Encrypt)]
+    [Redirection HTTP→HTTPS]
+  }
+
   node "resa-frontend\n(nginx)" as Front {
     [SPA React (build)]
     [nginx + log http_access]
+    [real_ip / X-Forwarded-For]
   }
 
   node "resa-backend\n(Laravel 8.x / PHP 8.4)" as Back {
@@ -32,8 +38,9 @@ node "Hôte Docker" {
 
 actor "Navigateur" as Browser
 
-Browser --> Front : HTTP :80
-Browser --> Dash  : HTTP :8080
+Browser --> Caddy : HTTPS :443
+Caddy   --> Front : HTTP interne\n(+ X-Forwarded-For)
+Browser --> Dash  : HTTP :8080 (supervision)
 Front --> Back    : proxy /api
 Back  --> Rsys    : logs JSON\nTCP 514 (réseau interne)
 Front --> Rsys    : http_access\nTCP 514 (réseau interne)
@@ -48,5 +55,11 @@ end note
 note bottom of DB
   Volume persistant
   2 comptes : rsyslog (INSERT) / dashboard_ro (SELECT)
+end note
+
+note top of Caddy
+  Seul point d'entrée web public (HTTPS).
+  network_mode host pour préserver l'IP cliente réelle
+  (cf. mémoire projet : Caddy host-network)
 end note
 @enduml

@@ -18,7 +18,7 @@ Projet réalisé **individuellement** par **Mathéo Moreira**.
 | L1 — Application Resa (backend Laravel + frontend React) | ✅ |
 | L2 — Service rsyslog + schéma de base `events` | ✅ |
 | L3 — Dashboard PHP MVC | ✅ |
-| L4 — Orchestration Docker (5 services) | ✅ |
+| L4 — Orchestration Docker (6 services) | ✅ |
 | L5 — Documentation (ANSSI, conception, utilisateur, tests) | ✅ |
 | L6 — Diagrammes UML & schémas | ✅ |
 | L7 — Qualité logicielle (PHPStan niveau 6, tests unitaires PHPUnit) | ✅ |
@@ -44,7 +44,7 @@ Projet réalisé **individuellement** par **Mathéo Moreira**.
 - [x] Page d'attente si base non prête
 
 ### L4 — Docker
-- [x] `docker-compose.yml` (5 services), volumes persistants
+- [x] `docker-compose.yml` (6 services), volumes persistants
 - [x] Comptes MariaDB séparés (intégrité ANSSI)
 - [x] Forward des accès nginx + slow query log MariaDB
 
@@ -65,7 +65,8 @@ Projet réalisé **individuellement** par **Mathéo Moreira**.
 | J1 | Application Resa + journalisation | — |
 | J2 | Chaîne rsyslog → MariaDB + dashboard | `v1.0.0` |
 | J3 | Journalisation étendue (accès nginx, slow query log) + refonte visuelle | `v1.1.0` |
-| J4 | Dossier documentaire complet + qualité logicielle | en cours |
+| J4 | HTTPS (Caddy) + anti-scan + classification bot | `v1.2.0` |
+| J5 | Dossier documentaire complet + renforcement preuve + qualité logicielle | `v1.2.0` |
 
 ## Gestion des risques
 
@@ -99,15 +100,15 @@ vérifiables) — c'est la source de vérité du projet, à défaut d'un outil d
 | J2 | Chaîne rsyslog → MariaDB + dashboard MVC | 09/06 | 09/06 | 0 | ~20 |
 | J3 | Journalisation étendue (nginx, slow log) + refonte visuelle | 09/06 | 09–10/06 | +0,5 j | ~15 |
 | J4 | HTTPS + anti-scan + classif. bot + dossier doc + qualité | 10/06 | 11/06 | +1 j | ~12 |
-| J5 | **Renforcement preuve** (perf mesurée, risques, IA brute) | 11/06 | 11/06 | 0 | en cours |
+| J5 | **Renforcement preuve** (perf mesurée, risques, IA brute) + intégration `main` | 11/06 | 11/06 | 0 | 18 |
 
 **Indicateurs synthétiques** (au 2026-06-11) :
 
 | Indicateur | Valeur |
 |-----------|--------|
 | Livrables terminés | 7 / 7 (L1–L7) |
-| Jalons tenus | 4 / 4 clôturés (écart cumulé +1,5 j sur 4 j) |
-| Commits (total / sur `main`) | 59, 100 % attribuables (solo) |
+| Jalons tenus | 5 / 5 clôturés (écart cumulé +1,5 j) |
+| Commits (total / sur `main`) | 66, intégralité sur `main` après merge `v1.2.0` (solo) |
 | Couverture tests | 28 tests / 48 assertions, couches Model + Core + helpers |
 | PHPStan | niveau 6, 0 erreur |
 | Exigences perf vérifiées | 3 / 3 mesurées (cf. P-1…P-3) |
@@ -122,6 +123,6 @@ projet).
 - **Workflow** : `main` (stable, tags) ← `develop` (intégration) ← `feature/*`
   (une branche par fonctionnalité, merges `--no-ff`).
 - **Branches** : `feature/resa-app`, `feature/php-dashboard`, `feature/docker-stack`, …
-- **Volume** : 59 commits, 100 % attribuables à Mathéo Moreira (projet solo).
+- **Volume** : 66 commits, 100 % attribuables à Mathéo Moreira (projet solo).
 
 > Vérification par l'évaluateur : `python3 eval/eval.py commits --repo <dépôt>`.

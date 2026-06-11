@@ -1,7 +1,15 @@
 # Analyse du guide ANSSI — Recommandations de sécurité pour l'architecture d'un système de journalisation
 
 > Référence : ANSSI, *Recommandations de sécurité pour l'architecture d'un système
-> de journalisation* (`supports/anssi-guide-recommandations_securite_architecture_systeme_journalisation.pdf`).
+> de journalisation*, **ANSSI-PA-012/ANSSI/SDE**, version du **28/01/2022**. Le guide
+> est joint au dépôt :
+> [`supports/anssi-guide-recommandations_securite_architecture_systeme_journalisation.pdf`](../supports/anssi-guide-recommandations_securite_architecture_systeme_journalisation.pdf)
+> ([source officielle cyber.gouv.fr](https://cyber.gouv.fr/sites/default/files/2022/01/anssi-guide-recommandations_securite_architecture_systeme_journalisation.pdf)).
+>
+> ⚠️ La numérotation `R1…R17` ci-dessous est **interne au projet** (regroupement
+> thématique des mesures), et non celle de l'annexe « Liste des recommandations » du
+> guide. Le mapping vers les numéros verbatim du guide reste à finaliser à partir du
+> PDF joint — cf. [verifs/anssi-pointeurs.md](verifs/anssi-pointeurs.md).
 
 Ce document recense les recommandations du guide et indique, pour chacune, son
 statut dans le projet : **✅ prise en compte**, **🟡 planifiée** (version future) ou
