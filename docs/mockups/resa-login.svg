@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 420" font-family="Segoe UI, Arial, sans-serif">
+  <style>
+    .frame{fill:#fff;stroke:#9aa3af;stroke-width:1.5}
+    .card{fill:#fbfcfd;stroke:#c5ccd6;stroke-width:1}
+    .field{fill:#fff;stroke:#b6bdc8;stroke-width:1}
+    .btn{fill:#3b5168}
+    .tb{fill:#111;font-size:15px;font-weight:bold}
+    .t{fill:#333;font-size:12px}
+    .tm{fill:#777;font-size:10px}
+    .lock{fill:#4a8d5b;font-size:11px}
+  </style>
+  <rect x="8" y="8" width="504" height="404" rx="6" class="frame"/>
+  <text x="24" y="34" class="lock">🔒 https://resa.mips.science/login</text>
+  <line x1="8" y1="48" x2="512" y2="48" stroke="#e0e4ea"/>
+  <rect x="150" y="90" width="220" height="260" rx="8" class="card"/>
+  <text x="200" y="130" class="tb">Connexion Resa</text>
+  <text x="170" y="165" class="t">E-mail</text>
+  <rect x="170" y="172" width="180" height="30" rx="4" class="field"/>
+  <text x="170" y="225" class="t">Mot de passe</text>
+  <rect x="170" y="232" width="180" height="30" rx="4" class="field"/>
+  <rect x="170" y="282" width="180" height="34" rx="4" class="btn"/>
+  <text x="225" y="304" fill="#fff" font-size="12">Se connecter</text>
+  <text x="170" y="338" class="tm">Pas de compte ? → /register</text>
+  <text x="24" y="392" class="tm">UC-01/UC-02 · échec → événement failed_login (T-02)</text>
+</svg>

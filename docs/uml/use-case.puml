@@ -1,0 +1,60 @@
+@startuml use-case
+' Diagramme de cas d'utilisation — Dashboard PHP / rsyslog
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Visiteur"        as Visitor
+actor "Utilisateur"     as User
+actor "Administrateur"  as Admin
+actor "Exploitant /\nAnalyste logs" as Ops
+
+' Héritage d'acteurs : un USER est un Visiteur authentifié, un ADMIN est un USER
+User  --|> Visitor
+Admin --|> User
+
+rectangle "Application Resa" {
+  usecase "S'inscrire"                 as UC01
+  usecase "Se connecter / déconnecter" as UC02
+  usecase "Consulter les salles"       as UC03
+  usecase "Créer une réservation"      as UC04
+  usecase "Gérer mes réservations"     as UC05
+  usecase "Administrer\n(salles, équipements,\nutilisateurs, stats)" as UC06
+  usecase "Journaliser l'événement"    as UCLOG
+}
+
+rectangle "Dashboard de journalisation" {
+  usecase "Voir la vue d'ensemble"        as UC07
+  usecase "Lister les événements"         as UC08
+  usecase "Consulter le détail (JSON brut)" as UC09
+  usecase "Vérifier la chaîne\nde centralisation" as UC10
+}
+
+Visitor --> UC01
+Visitor --> UC02
+User --> UC03
+User --> UC04
+User --> UC05
+Admin --> UC06
+
+Ops --> UC07
+Ops --> UC08
+Ops --> UC09
+Ops --> UC10
+
+' Toute action métier produit un journal
+UC01 ..> UCLOG : <<include>>
+UC02 ..> UCLOG : <<include>>
+UC04 ..> UCLOG : <<include>>
+UC05 ..> UCLOG : <<include>>
+UC06 ..> UCLOG : <<include>>
+
+' Extensions : cas d'erreur / sécurité
+usecase "Échec d'authentification" as UCFAIL
+usecase "Accès non autorisé"       as UCUNAUTH
+UCFAIL   ..> UC02 : <<extend>>
+UCUNAUTH ..> UC06 : <<extend>>
+UCFAIL   ..> UCLOG : <<include>>
+UCUNAUTH ..> UCLOG : <<include>>
+
+UC09 ..> UC08 : <<extend>>
+@enduml

@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────────────────────────
+# Reverse-proxy Caddy — TLS automatique (Let's Encrypt).
+#
+# Caddy est le point d'entrée public (ports 80/443). Il obtient et renouvelle
+# tout seul le certificat du domaine, puis relaie en HTTP interne vers le
+# conteneur nginx qui sert la SPA Resa et proxifie l'API Laravel.
+#
+# Le domaine est injecté depuis l'environnement (docker-compose -> .env).
+#
+# E-mail ACME : optionnel mais recommandé (notifications d'expiration). Pour
+# l'activer, renseigne ACME_EMAIL dans .env puis dé-commente le bloc global :
+#
+#   {
+#       email {$ACME_EMAIL}
+#   }
+# ─────────────────────────────────────────────────────────────
+
+{$RESA_DOMAIN} {
+	encode gzip
+	# Caddy tourne en réseau hôte ; il joint le frontend nginx publié sur la
+	# loopback (cf. docker-compose : 127.0.0.1:8081 -> conteneur:80).
+	reverse_proxy 127.0.0.1:8081
+}

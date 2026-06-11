@@ -1,0 +1,42 @@
+@startuml sitemap
+' Plan de site (sitemap) — les deux applications
+skinparam componentStyle rectangle
+left to right direction
+
+rectangle "Application Resa (HTTPS, via Caddy)" {
+  [/login]              as RLogin
+  [/register]           as RReg
+  [/  (accueil)]        as RHome
+  [/rooms]              as RRooms
+  [/rooms/{id}]         as RRoom
+  [/reservations/new]   as RNew
+  [/reservations]       as RMine
+  [/404]                as R404
+
+  RLogin --> RReg
+  RLogin --> RHome
+  RHome --> RRooms
+  RRooms --> RRoom
+  RHome --> RNew
+  RHome --> RMine
+
+  rectangle "Espace admin" {
+    [/admin]               as ADash
+    [/admin/rooms]         as ARooms
+    [/admin/reservations]  as ARes
+    [/admin/users]         as AUsers
+  }
+  RHome --> ADash
+}
+
+rectangle "Dashboard logs (:8080)" {
+  [/  (vue d'ensemble)]  as DHome
+  [/events  (liste)]     as DList
+  [/events/show (détail)] as DShow
+  [/api/stats (JSON)]    as DApi
+
+  DHome --> DList
+  DList --> DShow
+  DHome ..> DApi : AJAX
+}
+@enduml

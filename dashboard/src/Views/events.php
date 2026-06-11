@@ -31,6 +31,14 @@ function qs(array $overrides): string
             <?php endforeach; ?>
         </select>
     </label>
+    <label>Trafic
+        <select name="traffic">
+            <?php $traffics = ['' => '— tous —', 'human' => '👤 Humain', 'bot' => '🤖 Bot / scan']; ?>
+            <?php foreach ($traffics as $val => $lbl): ?>
+                <option value="<?= e($val) ?>" <?= ($filters['traffic'] ?? '') === $val ? 'selected' : '' ?>><?= e($lbl) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </label>
     <label>User ID
         <input type="number" name="user_id" value="<?= e($filters['user_id']) ?>" min="0" placeholder="ex: 1">
     </label>
@@ -66,7 +74,10 @@ function qs(array $overrides): string
         <?php foreach ($rows as $row): ?>
             <tr>
                 <td class="nowrap"><?= fmt_dt($row['received_at'], 'd/m H:i:s') ?></td>
-                <td><code><?= e($row['event']) ?></code></td>
+                <td>
+                    <code><?= e($row['event']) ?></code>
+                    <?php if (!empty($row['is_bot'])): ?><span class="badge-bot" title="Trafic identifié comme bot/scan">🤖 bot</span><?php endif; ?>
+                </td>
                 <td><span class="level level-<?= e($row['level']) ?>"><?= e($row['level']) ?></span></td>
                 <td><?= e($row['user_id']) ?></td>
                 <td><?= e($row['ip']) ?></td>
