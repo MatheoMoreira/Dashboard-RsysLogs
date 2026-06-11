@@ -64,15 +64,17 @@ log bruts, sans vue d'ensemble ni protection contre l'altération.
 
 ## 5. Critères de performance
 
-| Critère | Cible | Vérification |
+| Critère | Cible | Mesuré (cf. [08-performances.md](08-performances.md)) |
 |---------|-------|--------------|
-| Temps de réponse vue d'ensemble | < 500 ms pour ≤ 100 000 événements | colonnes générées **indexées** (`idx_event`, `idx_level`, `idx_received_at`) évitant le re-parsing JSON |
-| Latence d'ingestion (app → base) | < 1 s | insertion directe `ommysql`, pas de file intermédiaire |
-| Volumétrie supportée | ≥ 10⁶ lignes sans dégradation notable | `BIGINT` PK + index ; pagination côté liste |
+| Temps de réponse vue d'ensemble | < 500 ms pour ≤ 100 000 événements | **12 ms** (HTTP, base de démo) ; requêtes unitaires < 300 ms à **1 M** lignes ✅ |
+| Latence d'ingestion (app → base) | < 1 s | insertion directe `ommysql`, pas de file intermédiaire (qualitatif) |
+| Volumétrie supportée | ≥ 10⁶ lignes sans dégradation notable | **banc d'essai à 1 000 000 lignes** : pagination ~0,8 ms, agrégations ~200–300 ms ✅ |
 | Détection des requêtes lentes | requêtes ≥ 1 s tracées | **slow query log** MariaDB activé (`docker/mariadb/logging.cnf`) |
 
-> Les index sont posés sur les colonnes effectivement filtrées/triées par le
-> dashboard, ce qui garantit des `SELECT` sur colonnes plutôt que sur `JSON_EXTRACT`.
+> Ces cibles sont **mesurées et reproductibles** : protocole, résultats bruts et
+> plans d'exécution dans [08-performances.md](08-performances.md). La campagne a révélé
+> un goulot (calcul du trafic humain/bot, ~4,2 s à 1 M) **corrigé par un index composite
+> `(channel, is_bot)`** → ~80 ms (≈ 50×), intégré au schéma.
 
 ## 6. Contraintes techniques
 
