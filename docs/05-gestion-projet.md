@@ -108,7 +108,7 @@ vérifiables) — c'est la source de vérité du projet, à défaut d'un outil d
 |-----------|--------|
 | Livrables terminés | 7 / 7 (L1–L7) |
 | Jalons tenus | 5 / 5 clôturés (écart cumulé +1,5 j) |
-| Commits (total / sur `main`) | 69, intégralité sur `main` après merge `v1.2.0` (solo) |
+| Commits (total / sur `main`) | 71, intégralité sur `main` après merge `v1.2.0` (solo) |
 | Couverture tests | 28 tests / 48 assertions, couches Model + Core + helpers |
 | PHPStan | niveau 6, 0 erreur |
 | Exigences perf vérifiées | 3 / 3 mesurées (cf. P-1…P-3) |
@@ -123,6 +123,6 @@ projet).
 - **Workflow** : `main` (stable, tags) ← `develop` (intégration) ← `feature/*`
   (une branche par fonctionnalité, merges `--no-ff`).
 - **Branches** : `feature/resa-app`, `feature/php-dashboard`, `feature/docker-stack`, …
-- **Volume** : 69 commits, 100 % attribuables à Mathéo Moreira (projet solo).
+- **Volume** : 71 commits, 100 % attribuables à Mathéo Moreira (projet solo).
 
 > Vérification par l'évaluateur : `python3 eval/eval.py commits --repo <dépôt>`.
