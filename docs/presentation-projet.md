@@ -226,7 +226,7 @@ Conteneurisation Docker · sécurité par moindre privilège
 | **L4** | Orchestration **Docker** (6 services, volumes persistants) |
 | **L5** | Documentation (ANSSI, conception, utilisateur, tests) |
 | **L6** | Diagrammes UML & schémas |
-| **L7** | Qualité logicielle (**PHPStan niveau 6**, **PHPUnit 28 tests**) |
+| **L7** | Qualité logicielle (**PHPStan niveau 6**, **PHPUnit 35 tests**) |
 
 ---
 
@@ -241,7 +241,7 @@ Conteneurisation Docker · sécurité par moindre privilège
 | L3 | MVC maison (Router · Controller · View · Database PDO) ; vues |
 | L4 | `docker-compose.yml` ; 2 comptes MariaDB ; forward nginx + slow query log |
 | L5/L6 | Dossier documentaire + UML (use case, déploiement, synoptique, sitemap, mockup) |
-| L7 | PHPStan niveau 6 (0 erreur) ; 28 tests PHPUnit ; banc de performance |
+| L7 | PHPStan niveau 6 (0 erreur) ; 35 tests PHPUnit ; banc de performance |
 
 ---
 
@@ -329,7 +329,7 @@ Format **état initial → action → résultat attendu → obtenu** · 14 tests
 | T-12 | Scan `/.env` → **403** + `scanner_probe` journalisé | ✅ |
 | T-13 | Classification **humain / bot** (`is_bot`) | ✅ |
 
-<span class="small">Qualité logicielle : **PHPStan niveau 6** (0 erreur) · **28 tests PHPUnit**.</span>
+<span class="small">Qualité logicielle : **PHPStan niveau 6** (0 erreur) · **35 tests PHPUnit**.</span>
 
 ---
 
@@ -354,6 +354,6 @@ Format **état initial → action → résultat attendu → obtenu** · 14 tests
 
 **Centralisation & supervision des journaux** — rsyslog · MariaDB · Dashboard PHP MVC
 
-Code propre vérifié (PHPStan niveau 6 · 28 tests PHPUnit) · sécurité par moindre privilège · déploiement Docker
+Code propre vérifié (PHPStan niveau 6 · 35 tests PHPUnit) · sécurité par moindre privilège · déploiement Docker
 
 *Mathéo Moreira — CPI*
