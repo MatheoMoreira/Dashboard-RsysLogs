@@ -55,7 +55,7 @@ Projet réalisé **individuellement** par **Mathéo Moreira**.
 ### L7 — Qualité logicielle
 - [x] Configuration **PHPStan** niveau 6 (`dashboard/phpstan.neon`) — `composer analyse`, **0 erreur**
 - [x] Extraction des helpers (`src/helpers.php`) pour la modularité et l'analyse statique
-- [x] Tests unitaires **PHPUnit** (28 tests) sur 3 couches — helpers, Model (`EventModel::buildWhere`), Core (`Router::normalizePath`) — `composer test`
+- [x] Tests unitaires **PHPUnit** (35 tests) sur 4 couches — helpers, Model (`EventModel::buildWhere`), Core (`Router::normalizePath`), Vue (`View::render` + anti-XSS) — `composer test`
 - [x] **Performances mesurées** sur banc d'essai à 1 M de lignes + optimisation index ([../docs/08-performances.md](08-performances.md))
 
 ## Échéancier (jalons)
@@ -109,7 +109,7 @@ vérifiables) — c'est la source de vérité du projet, à défaut d'un outil d
 | Livrables terminés | 7 / 7 (L1–L7) |
 | Jalons tenus | 5 / 5 clôturés (écart cumulé +1,5 j) |
 | Commits (total / sur `main`) | 71, intégralité sur `main` après merge `v1.2.0` (solo) |
-| Couverture tests | 28 tests / 48 assertions, couches Model + Core + helpers |
+| Couverture tests | 35 tests / 62 assertions, couches Model + Core + helpers + Vue |
 | PHPStan | niveau 6, 0 erreur |
 | Exigences perf vérifiées | 3 / 3 mesurées (cf. P-1…P-3) |
 

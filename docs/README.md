@@ -26,17 +26,19 @@ Le dashboard est analysé et testé (commandes depuis `dashboard/`) :
 ```bash
 composer install        # installe phpstan + phpunit (require-dev)
 composer analyse        # PHPStan niveau 6 — 0 erreur
-composer test           # PHPUnit — 28 tests, 48 assertions
+composer test           # PHPUnit — 35 tests, 62 assertions
 ```
 
 - **POO** : MVC maison (`Router`, `Controller` abstrait, `View`, `Database` en
   singleton, modèle `EventModel`), classes `final`, `declare(strict_types=1)`.
 - **PHPStan** : niveau 6, configuré dans `dashboard/phpstan.neon`.
-- **Tests unitaires** : **28 tests** sur les couches *helpers* (`HelpersTest` —
+- **Tests unitaires** : **35 tests** sur quatre couches — *helpers* (`HelpersTest` —
   `e()`, `fmt_dt()`, `fmt_bytes()`, `fmt_duration()`), *Model*
-  (`EventModelTest` — `EventModel::buildWhere`) et *Core* (`RouterTest` —
-  `Router::normalizePath`). PHPUnit s'exécute dans le conteneur PHP (extensions
-  `dom/xml` fournies par l'image).
+  (`EventModelTest` — `EventModel::buildWhere`), *Core* (`RouterTest` —
+  `Router::normalizePath`) et *Vue* (`ViewTest` — rendu `View::render` dans le
+  layout, intégration des templates et **échappement HTML / anti-XSS** du titre et
+  des données). PHPUnit s'exécute dans le conteneur PHP (extensions `dom/xml`
+  fournies par l'image).
 
 ## Diagrammes (`uml/`)
 
