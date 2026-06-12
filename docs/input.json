@@ -1,0 +1,30 @@
+{
+  "_instructions": "Remplissez ce fichier avant la soutenance. La somme des participation_pct doit être égale à 100.",
+  "groupe": "G2",
+  "depot_github": "https://github.com/MatheoMoreira/Dashboard-RsysLogs",
+  "etudiants": [
+    {
+      "nom": "42",
+      "prenom": "Mathéo",
+      "participation_pct": 100
+    }
+  ],
+  "projet": {
+    "titre": "Resa",
+    "description": "application de réservation de salle"
+  },
+  "livrables": {
+    "analyse_anssi": "docs/01-analyse-anssi.md",
+    "procedure_installation": "README.md",
+    "documentation_utilisateur": "docs/03-documentation-utilisateur.md",
+    "tests_validation": "docs/04-tests-validation.md",
+    "cahier_des_charges": "docs/02-conception.md",
+    "planning_taches": "docs/05-gestion-projet.md",
+    "uml_use_case": "docs/uml/use-case.puml",
+    "uml_deploiement": "docs/uml/deploiement.puml",
+    "schema_reseau": "docs/uml/synoptique.puml",
+    "sitemap": "docs/uml/sitemap.puml",
+    "mockup": "docs/07-mockup.md",
+    "echanges_ia": "docs/06-echanges-ia.md"
+  }
+}
